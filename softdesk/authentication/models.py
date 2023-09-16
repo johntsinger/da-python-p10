@@ -18,3 +18,6 @@ class User(AbstractUser):
         'email',
         'birthdate',
     ]
+
+    def __str__(self):
+        return self.username
