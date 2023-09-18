@@ -3,6 +3,7 @@ from rest_framework.serializers import (
     ModelSerializer,
     ValidationError,
 )
+from django.contrib.auth.hashers import make_password
 from authentication.models import User
 
 
@@ -40,7 +41,7 @@ class UserSerializer(ModelSerializer):
             }
         }
 
-    def validate_birthdate(selfn, value):
+    def validate_birthdate(self, value):
         today = date.today()
         if (
             today.year - value.year - (
@@ -55,3 +56,12 @@ class UserSerializer(ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            if key == 'password':
+                setattr(instance, key, make_password(value))
+            else:
+                setattr(instance, key, value)
+        instance.save()
+        return instance

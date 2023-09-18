@@ -10,10 +10,10 @@ class IsAdminAuthenticated(BasePermission):
         )
 
 
-class IsStaffAuthenticated(BasePermission):
+class IsThisMyData(BasePermission):
     def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.is_staff
+            and int(view.kwargs['pk']) == request.user.id
         )
