@@ -2,6 +2,7 @@ from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     ValidationError,
+    StringRelatedField
 )
 from projectsapp.models import (
     Contributor,
@@ -9,6 +10,7 @@ from projectsapp.models import (
     Issue,
     Comment
 )
+from authentication.serializers import UserSerializer
 
 
 class FieldMixin:
@@ -27,6 +29,8 @@ class FieldMixin:
 
 
 class ContributorListSerializer(ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = Contributor
         fields = [
@@ -63,28 +67,30 @@ class IssueDetailSerializer(FieldMixin, ModelSerializer):
 
 
 class ProjectListSerializer(ModelSerializer):
+    author = UserSerializer(read_only=True)
+    contributors = StringRelatedField(many=True, read_only=True)
+
     class Meta:
         model = Project
         fields = '__all__'
 
 
 class ProjectDetailSerailizer(FieldMixin, ModelSerializer):
+    author = UserSerializer(read_only=True)
+    contributors = ContributorListSerializer(
+        source='contributor_set',
+        many=True
+    )
     issues = SerializerMethodField()
-    contributors = SerializerMethodField()
 
     class Meta:
         model = Project
         fields = '__all__'
-        extra_fields = ['issues', 'contributors']
+        extra_fields = ['issues']
 
     def get_issues(self, instance):
         queryset = instance.issues.all()
         serializer = IssueListSerializer(queryset, many=True)
-        return serializer.data
-
-    def get_contributors(self, instance):
-        queryset = instance.contributors.all()
-        serializer = ContributorListSerializer(queryset, many=True)
         return serializer.data
 
 

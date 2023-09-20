@@ -27,6 +27,11 @@ class Project(models.Model):
         on_delete=models.CASCADE,
         related_name='projects_created'
     )
+    contributors = models.ManyToManyField(
+        to=settings.AUTH_USER_MODEL,
+        through='Contributor',
+        related_name='projects'
+    )
     type = models.CharField(
         max_length=8,
         choices=TYPE_CHOICES,
@@ -55,7 +60,7 @@ class Contributor(models.Model):
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,
-        related_name='contributors'
+
     )
     role = models.CharField(
         max_length=11,
@@ -63,8 +68,8 @@ class Contributor(models.Model):
         default=CONTRIBUTOR
     )
 
-    def __str__(self):
-        return self.user.username
+    class Meta:
+        unique_together = ('user', 'project')
 
 
 class Issue(models.Model):

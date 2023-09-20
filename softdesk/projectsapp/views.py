@@ -10,6 +10,7 @@ from projectsapp.models import (
 )
 from projectsapp.serializers import (
     ContributorListSerializer,
+    ContributorDetailSerializer,
     ProjectListSerializer,
     ProjectDetailSerailizer,
     IssueListSerializer,
@@ -35,9 +36,7 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
     detail_serializer_class = ProjectDetailSerailizer
 
     def get_queryset(self):
-        return Project.objects.filter(
-            contributors__user_id=self.request.user.id
-        )
+        return self.request.user.projects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -51,10 +50,11 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        project = serializer.save()
-        contributor = Contributor.objects.create(
-            user=self.request.user,
-            role='AUTHOR'
+        project = serializer.save(author=self.request.user)
+        project.contributors.add(
+            project.author,
+            through_defaults={
+                'role': 'AUTHOR'
+            }
         )
-        contributor.save()
-        project.contributors.set([contributor])
+        return project
