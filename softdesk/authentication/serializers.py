@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import make_password
 from authentication.models import User
 
 
-class UserSerializer(ModelSerializer):
+class UserDetailSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -65,3 +65,13 @@ class UserSerializer(ModelSerializer):
                 setattr(instance, key, value)
         instance.save()
         return instance
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+        ]

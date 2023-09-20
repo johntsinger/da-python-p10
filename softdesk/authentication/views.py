@@ -6,7 +6,7 @@ from authentication.permissions import (
     IsThisMyData
 )
 from authentication.serializers import (
-    UserSerializer,
+    UserDetailSerializer,
 )
 
 
@@ -15,7 +15,7 @@ User = get_user_model()
 
 class AdminUserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
 
     def get_permissions(self):
         if self.action in ('update', 'partial_update', 'destroy'):
