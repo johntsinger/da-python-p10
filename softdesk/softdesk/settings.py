@@ -135,19 +135,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-
-"""
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'authentication.serializers.CustomUserDetailsSerializer',
-}
-
-REST_AUTH_REGISTER_SERIALIZERS = {
-    "REGISTER_SERIALIZER": 'authentication.serializers.RegisterSerializer',
-}
-"""
 
 # Simple JWT
 SIMPLE_JWT = {
