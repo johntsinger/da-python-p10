@@ -4,6 +4,7 @@ from rest_framework.serializers import (
     ValidationError,
     StringRelatedField
 )
+from rest_framework.validators import UniqueTogetherValidator
 from projectsapp.models import (
     Contributor,
     Project,
@@ -67,7 +68,7 @@ class IssueDetailSerializer(FieldMixin, ModelSerializer):
 
 
 class ProjectListSerializer(ModelSerializer):
-    author = UserSerializer(read_only=True)
+    author = StringRelatedField(read_only=True)
     contributors = StringRelatedField(many=True, read_only=True)
 
     class Meta:
@@ -110,3 +111,25 @@ class ContributorDetailSerializer(ModelSerializer):
         queryset = instance.project
         serializer = ProjectListSerializer(queryset, many=True)
         return serializer.data
+
+
+class AddContributorSerializer(ModelSerializer):
+    class Meta:
+        model = Contributor
+        fields = [
+            'user',
+        ]
+
+    def create(self, validated_data):
+        if Contributor.objects.filter(
+            **validated_data
+        ).exists():
+            raise ValidationError(
+                {
+                    'unique constraint failed':
+                        [
+                            "This contributor already exists"
+                        ]
+                }
+            )
+        return super().create(validated_data)

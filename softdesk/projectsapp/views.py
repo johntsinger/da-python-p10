@@ -1,7 +1,9 @@
 from rest_framework import status
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from projectsapp.models import (
     Contributor,
     Project,
@@ -15,7 +17,8 @@ from projectsapp.serializers import (
     ProjectDetailSerailizer,
     IssueListSerializer,
     IssueDetailSerializer,
-    CommentSerializer
+    CommentSerializer,
+    AddContributorSerializer
 )
 
 
@@ -58,3 +61,46 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
             }
         )
         return project
+
+    @action(
+        methods=['post'],
+        detail=True,
+        url_path='add-contributor',
+        url_name='add_contributor',
+        serializer_class=AddContributorSerializer
+    )
+    def add_contibutor(self, request, pk=None):
+        serializer = self.serializer_class(
+            data=request.data
+        )
+        if serializer.is_valid():
+            serializer.save(project=self.get_object())
+            return Response(
+                {'status': 'Contributor added'}
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        methods=['post'],
+        detail=True,
+        url_path='remove-contributor',
+        url_name='remove_contributor',
+        serializer_class=AddContributorSerializer
+    )
+    def remove_contibutor(self, request, pk=None):
+        project = self.get_object()
+        if project.author.id == int(request.data['user']):
+            return Response(
+                {
+                    'detail':
+                    'You cannot remove the author from the contributors'
+                }
+            )
+        self.get_object().contributors.remove(
+            request.data['user']
+        )
+        return Response(
+            {'status': 'Contributor removed'}
+        )
