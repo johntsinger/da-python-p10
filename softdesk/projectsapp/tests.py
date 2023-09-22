@@ -163,83 +163,14 @@ class AppAPITestCase(APITestCase):
             'detail': 'Authentication credentials were not provided.'
         }
 
-
-class TestProjectUnauthenticated(AppAPITestCase):
-    url_list = reverse_lazy('project-list')
-    url_detail = reverse_lazy('project-detail', args=(1,))
-    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
-    url_remove_contributor = reverse_lazy(
-        'project-remove_contributor',
-        args=(1,)
-    )
-
-    def test_list(self):
-        response = self.client.get(self.url_list)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_unauthenticated()
-        )
-
-    def test_detail(self):
-        response = self.client.get(self.url_detail)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_unauthenticated()
-        )
-
-    def test_create(self):
-        project_count = Project.objects.count()
-        response = self.client.post(
-            self.url_list,
-            data={
-                "name": "project",
-                "description": "project description",
-                "type": "BACKEND"
-            }
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(Project.objects.count(), project_count)
-
-    def test_add_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_add_contributor,
-            data={
-                "user": "3"
-            }
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_unauthenticated()
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-    def test_remove_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "2"
-            }
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_unauthenticated()
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
+    def get_response_no_permission(self):
+        return {
+            "detail": "You do not have permission to perform this action."
+        }
 
 
-class TestProjectAuthenticated(AppAPITestCase):
+class TestProjectAuthenticatedAllPermission(AppAPITestCase):
+    """Test Project for an authenticated user that have all permissions"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
     url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
@@ -286,6 +217,12 @@ class TestProjectAuthenticated(AppAPITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Project.objects.count(), project_count + 1)
 
+    def test_delete(self):
+        project_count = Project.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Project.objects.count(), project_count - 1)
+
     def test_add_contributor(self):
         contributors_count = self.project1.contributors.all().count()
         response = self.client.post(
@@ -297,7 +234,7 @@ class TestProjectAuthenticated(AppAPITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            {'status': 'Contributor added'}
+            {'status': 'Contributor added.'}
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -318,7 +255,7 @@ class TestProjectAuthenticated(AppAPITestCase):
             {
                 'unique constraint failed':
                     [
-                        "This contributor already exists"
+                        "This contributor already exists."
                     ]
             }
         )
@@ -360,7 +297,7 @@ class TestProjectAuthenticated(AppAPITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
-            {'status': 'Contributor removed'}
+            {'status': 'Contributor removed.'}
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -378,7 +315,8 @@ class TestProjectAuthenticated(AppAPITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json(),
-            {'detail': 'You cannot remove the author from the contributors'}
+            {'detail': 'You cannot remove the author from the contributors.'
+                ' Delete the project instead.'}
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -401,6 +339,154 @@ class TestProjectAuthenticated(AppAPITestCase):
                     f"Invalid pk 50 - Contributor does not exist."
                 ]
             },
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestProjectNoPermission(AppAPITestCase):
+    """Test Project for an authenticated user with no permissions"""
+    url_detail = reverse_lazy('project-detail', args=(1,))
+    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
+    url_remove_contributor = reverse_lazy(
+        'project-remove_contributor',
+        args=(1,)
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user2', password='wxcv1234')
+
+    def test_delete(self):
+        project_count = Project.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_no_permission()
+        )
+        self.assertEqual(Project.objects.count(), project_count)
+
+    def test_add_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_add_contributor,
+            data={
+                "user": "3"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_no_permission()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+    def test_remove_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_remove_contributor,
+            data={
+                "user": "3"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_no_permission()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestProjectNotAuthenticated(AppAPITestCase):
+    """Test Project for an unauthenticated user"""
+    url_list = reverse_lazy('project-list')
+    url_detail = reverse_lazy('project-detail', args=(1,))
+    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
+    url_remove_contributor = reverse_lazy(
+        'project-remove_contributor',
+        args=(1,)
+    )
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
+        )
+
+    def test_create(self):
+        project_count = Project.objects.count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "name": "project",
+                "description": "project description",
+                "type": "BACKEND"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
+        )
+        self.assertEqual(Project.objects.count(), project_count)
+
+    def test_delete(self):
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
+        )
+
+    def test_add_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_add_contributor,
+            data={
+                "user": "3"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+    def test_remove_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_remove_contributor,
+            data={
+                "user": "2"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_unauthenticated()
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
