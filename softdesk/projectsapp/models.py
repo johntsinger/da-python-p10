@@ -43,6 +43,19 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        """Add author to contributor if created"""
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self.contributors.add(
+                self.author,
+                through_defaults={
+                    'role': 'AUTHOR'
+                }
+            )
+        else:
+            super().save(*args, **kwargs)
+
 
 class Contributor(models.Model):
     AUTHOR = 'AUTHOR'

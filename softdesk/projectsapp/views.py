@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from projectsapp.models import (
@@ -37,30 +38,13 @@ class MultipleSerializerMixin:
 class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
     serializer_class = ProjectListSerializer
     detail_serializer_class = ProjectDetailSerailizer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return self.request.user.projects.all()
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
-        )
-
     def perform_create(self, serializer):
-        project = serializer.save(author=self.request.user)
-        project.contributors.add(
-            project.author,
-            through_defaults={
-                'role': 'AUTHOR'
-            }
-        )
-        return project
+        serializer.save(author=self.request.user)
 
     @action(
         methods=['post'],
@@ -96,7 +80,20 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
                 {
                     'detail':
                     'You cannot remove the author from the contributors'
-                }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not project.contributors.filter(
+            id=int(request.data['user'])
+        ).exists():
+            return Response(
+                {
+                    "user": [
+                        f"Invalid pk {request.data['user']}"
+                        " - Contributor does not exist."
+                    ]
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
         self.get_object().contributors.remove(
             request.data['user']
