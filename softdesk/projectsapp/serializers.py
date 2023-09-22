@@ -128,7 +128,7 @@ class AddContributorSerializer(ModelSerializer):
                 {
                     'unique constraint failed':
                         [
-                            "This contributor already exists"
+                            "This contributor already exists."
                         ]
                 }
             )

@@ -21,6 +21,10 @@ from projectsapp.serializers import (
     CommentSerializer,
     AddContributorSerializer
 )
+from projectsapp.permissions import (
+    IsAuthor,
+    IsOwner,
+)
 
 
 class MultipleSerializerMixin:
@@ -43,6 +47,24 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
     def get_queryset(self):
         return self.request.user.projects.all()
 
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of
+        permissions that this view requires.
+        """
+        if self.action in (
+            'destroy',
+            'update',
+            'partial_update',
+            'add_contributor'
+        ):
+            permission_classes = self.permission_classes + [IsAuthor]
+        elif self.action == 'remove_contibutor':
+            permission_classes = self.permission_classes + [IsOwner | IsAuthor]
+        else:
+            permission_classes = self.permission_classes
+        return [permission() for permission in permission_classes]
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
@@ -53,14 +75,14 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
         url_name='add_contributor',
         serializer_class=AddContributorSerializer
     )
-    def add_contibutor(self, request, pk=None):
+    def add_contributor(self, request, pk=None):
         serializer = self.serializer_class(
             data=request.data
         )
         if serializer.is_valid():
             serializer.save(project=self.get_object())
             return Response(
-                {'status': 'Contributor added'}
+                {'status': 'Contributor added.'}
             )
         return Response(
             serializer.errors,
@@ -79,7 +101,8 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
             return Response(
                 {
                     'detail':
-                    'You cannot remove the author from the contributors'
+                    'You cannot remove the author from the contributors.'
+                    ' Delete the project instead.'
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -99,5 +122,5 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
             request.data['user']
         )
         return Response(
-            {'status': 'Contributor removed'}
+            {'status': 'Contributor removed.'}
         )
