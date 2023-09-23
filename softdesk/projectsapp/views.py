@@ -23,7 +23,7 @@ from projectsapp.serializers import (
 )
 from projectsapp.permissions import (
     IsAuthor,
-    IsOwner,
+    IsDataOwner,
 )
 
 
@@ -60,13 +60,21 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
         ):
             permission_classes = self.permission_classes + [IsAuthor]
         elif self.action == 'remove_contibutor':
-            permission_classes = self.permission_classes + [IsOwner | IsAuthor]
+            permission_classes = (
+                self.permission_classes + [IsDataOwner | IsAuthor]
+            )
         else:
             permission_classes = self.permission_classes
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        project = serializer.save(author=self.request.user)
+        project.contributors.add(
+            project.author,
+            through_defaults={
+                'role': 'AUTHOR'
+            }
+        )
 
     @action(
         methods=['post'],
@@ -123,4 +131,19 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
         )
         return Response(
             {'status': 'Contributor removed.'}
+        )
+
+
+class IssueViewSet(MultipleSerializerMixin, ModelViewSet):
+    serializer_class = IssueListSerializer
+    detail_serializer_class = IssueDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Issue.objects.filter(project=self.kwargs['project_pk'])
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+            project=Project.objects.get(pk=self.kwargs['project_pk'])
         )

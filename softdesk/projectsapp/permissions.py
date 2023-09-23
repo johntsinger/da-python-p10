@@ -10,8 +10,10 @@ class IsAuthor(BasePermission):
         )
 
 
-class IsOwner(BasePermission):
+class IsDataOwner(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user.id == int(request.data['user'])
-        )
+        if 'user' in request.data:
+            return (
+                request.user.id == int(request.data['user'])
+            )
+        return True
