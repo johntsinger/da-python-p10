@@ -42,6 +42,12 @@ class AppAPITestCase(APITestCase):
             type='BACKEND',
         )
         cls.project1.contributors.add(
+            cls.user,
+            through_defaults={
+                'role': 'AUTHOR'
+            }
+        )
+        cls.project1.contributors.add(
             cls.user2,
             through_defaults={
                 'role': 'CONTRIBUTOR'
@@ -52,6 +58,12 @@ class AppAPITestCase(APITestCase):
             description='description2',
             author=cls.user,
             type='iOS',
+        )
+        cls.project2.contributors.add(
+            cls.user,
+            through_defaults={
+                'role': 'AUTHOR'
+            }
         )
 
     @classmethod
@@ -100,11 +112,11 @@ class AppAPITestCase(APITestCase):
                 'id': project.pk,
                 'name': project.name,
                 'description': project.description,
-                'author': project.author.username,
+                'author': project.author.id,
                 'type': project.type,
                 'time_created': self.format_datetime(project.time_created),
                 'contributors': [
-                    contributor.username
+                    contributor.id
                     for contributor in project.contributors.all()
                 ]
             } for project in projects
@@ -169,7 +181,7 @@ class AppAPITestCase(APITestCase):
         }
 
 
-class TestProjectAuthenticatedAllPermission(AppAPITestCase):
+class TestProjectAuthenticatedPermission(AppAPITestCase):
     """Test Project for an authenticated user that have all permissions"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
@@ -216,6 +228,13 @@ class TestProjectAuthenticatedAllPermission(AppAPITestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Project.objects.count(), project_count + 1)
+        project = Project.objects.get(name='project')
+        # test if author is in contributors
+        self.assertIn(
+            project.author,
+            Project.objects.get(name='project').contributors.all()
+        )
+        self.assertEqual(project.contributor_set.first().role, 'AUTHOR')
 
     def test_delete(self):
         project_count = Project.objects.count()
