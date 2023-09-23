@@ -2,9 +2,8 @@ from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     ValidationError,
-    StringRelatedField
+    PrimaryKeyRelatedField
 )
-from rest_framework.validators import UniqueTogetherValidator
 from projectsapp.models import (
     Contributor,
     Project,
@@ -29,6 +28,14 @@ class FieldMixin:
             return fields
 
 
+class ContributorPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    def get_queryset(self):
+        project = Project.objects.get(
+            pk=int(self.context['view'].kwargs['project_pk'])
+        )
+        return project.contributor_set.all()
+
+
 class ContributorListSerializer(ModelSerializer):
     user = UserSerializer()
 
@@ -48,6 +55,10 @@ class CommentSerializer(ModelSerializer):
 
 
 class IssueListSerializer(ModelSerializer):
+    author = PrimaryKeyRelatedField(read_only=True)
+    project = PrimaryKeyRelatedField(read_only=True)
+    assigned_to = ContributorPrimaryKeyRelatedField()
+
     class Meta:
         model = Issue
         fields = '__all__'
@@ -68,8 +79,8 @@ class IssueDetailSerializer(FieldMixin, ModelSerializer):
 
 
 class ProjectListSerializer(ModelSerializer):
-    author = StringRelatedField(read_only=True)
-    contributors = StringRelatedField(many=True, read_only=True)
+    author = PrimaryKeyRelatedField(read_only=True)
+    contributors = PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Project
