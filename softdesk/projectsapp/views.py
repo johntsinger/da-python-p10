@@ -24,6 +24,7 @@ from projectsapp.serializers import (
 from projectsapp.permissions import (
     IsAuthor,
     IsDataOwner,
+    IsContributor
 )
 
 
@@ -42,7 +43,7 @@ class MultipleSerializerMixin:
 class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
     serializer_class = ProjectListSerializer
     detail_serializer_class = ProjectDetailSerailizer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsContributor]
 
     def get_queryset(self):
         return self.request.user.projects.all()
@@ -137,10 +138,27 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
 class IssueViewSet(MultipleSerializerMixin, ModelViewSet):
     serializer_class = IssueListSerializer
     detail_serializer_class = IssueDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsContributor]
 
     def get_queryset(self):
-        return Issue.objects.filter(project=self.kwargs['project_pk'])
+        return Issue.objects.filter(
+            project=self.kwargs['project_pk']
+        )
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of
+        permissions that this view requires.
+        """
+        if self.action in (
+            'destroy',
+            'update',
+            'partial_update',
+        ):
+            permission_classes = self.permission_classes + [IsAuthor]
+        else:
+            permission_classes = self.permission_classes
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(
