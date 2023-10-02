@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     ValidationError,
-    PrimaryKeyRelatedField
+    StringRelatedField,
+    SlugRelatedField,
 )
 from projectsapp.models import (
     Contributor,
@@ -11,6 +13,9 @@ from projectsapp.models import (
     Comment
 )
 from authentication.serializers import UserSerializer
+
+
+User = get_user_model()
 
 
 class FieldMixin:
@@ -28,16 +33,8 @@ class FieldMixin:
             return fields
 
 
-class ContributorPrimaryKeyRelatedField(PrimaryKeyRelatedField):
-    def get_queryset(self):
-        project = Project.objects.get(
-            pk=int(self.context['view'].kwargs['project_pk'])
-        )
-        return project.contributor_set.all()
-
-
 class ContributorListSerializer(ModelSerializer):
-    user = UserSerializer()
+    user = StringRelatedField(read_only=True)
 
     class Meta:
         model = Contributor
@@ -49,82 +46,105 @@ class ContributorListSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
+    author = StringRelatedField(read_only=True)
+    issue = StringRelatedField(read_only=True)
+
     class Meta:
         model = Comment
         fields = '__all__'
 
 
+class ContributorSlugRelatedField(SlugRelatedField):
+    def get_queryset(self):
+        return User.objects.filter(
+            projects=self.context['view'].kwargs['project_pk']
+        )
+
+    def to_representation(self, value):
+        if isinstance(value, Contributor):
+            return value.user.username
+        else:
+            return value
+
+
 class IssueListSerializer(ModelSerializer):
-    author = PrimaryKeyRelatedField(read_only=True)
-    project = PrimaryKeyRelatedField(read_only=True)
-    assigned_to = ContributorPrimaryKeyRelatedField()
+    author = StringRelatedField(read_only=True)
+    project = StringRelatedField(read_only=True)
+    assigned_to = ContributorSlugRelatedField(
+        slug_field='username',
+        error_messages={
+            'does_not_exist':
+                ('User object with {slug_name}={value} '
+                 'is not a contributor of this project.')
+        }
+    )
 
     class Meta:
         model = Issue
-        fields = '__all__'
+        exclude = ('time_created',)
+
+    def validate_assigned_to(self, value):
+        return Contributor.objects.get(
+            project_id=self.context['view'].kwargs['project_pk'],
+            user=value,
+        )
 
 
 class IssueDetailSerializer(FieldMixin, ModelSerializer):
-    comments = SerializerMethodField()
+    author = StringRelatedField(read_only=True)
+    project = StringRelatedField(read_only=True)
+    assigned_to = ContributorSlugRelatedField(slug_field='username')
+    comments_count = SerializerMethodField()
 
     class Meta:
         model = Issue
         fields = '__all__'
-        extra_fields = ['comments']
+        extra_fields = ['comments_count']
 
-    def get_comments(self, instance):
-        queryset = instance.comments.all()
-        serializer = CommentSerializer(queryset, many=True)
-        return serializer.data
+    def get_comments_count(self, instance):
+        return instance.comments_count
 
 
 class ProjectListSerializer(ModelSerializer):
-    author = PrimaryKeyRelatedField(read_only=True)
-    contributors = PrimaryKeyRelatedField(many=True, read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = Project
-        fields = '__all__'
+        exclude = ('time_created', 'contributors')
 
 
 class ProjectDetailSerailizer(FieldMixin, ModelSerializer):
-    author = UserSerializer(read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True)
     contributors = ContributorListSerializer(
         source='contributor_set',
         many=True
     )
-    issues = SerializerMethodField()
+    open_issues_count = SerializerMethodField()
+    closed_issues_count = SerializerMethodField()
 
     class Meta:
         model = Project
         fields = '__all__'
-        extra_fields = ['issues']
+        extra_fields = ['open_issues_count', 'closed_issues_count']
 
-    def get_issues(self, instance):
-        queryset = instance.issues.all()
-        serializer = IssueListSerializer(queryset, many=True)
-        return serializer.data
+    def get_open_issues_count(self, instance):
+        return instance.open_issues_count
+
+    def get_closed_issues_count(self, instance):
+        return instance.closed_issues_count
 
 
 class ContributorDetailSerializer(ModelSerializer):
-    projects = SerializerMethodField()
+    user = UserSerializer()
 
     class Meta:
         model = Contributor
-        fields = [
-            'id',
-            'user',
-            'role',
-            'projects'
-        ]
-
-    def get_projects(self, instance):
-        queryset = instance.project
-        serializer = ProjectListSerializer(queryset, many=True)
-        return serializer.data
+        fields = '__all__'
 
 
 class AddContributorSerializer(ModelSerializer):
+    user = SlugRelatedField(slug_field='username', queryset=User.objects.all())
+
     class Meta:
         model = Contributor
         fields = [
@@ -143,4 +163,5 @@ class AddContributorSerializer(ModelSerializer):
                         ]
                 }
             )
+
         return super().create(validated_data)
