@@ -61,7 +61,6 @@ class ContributorSlugRelatedField(SlugRelatedField):
         )
 
     def to_representation(self, value):
-        print(type(value))
         if isinstance(value, Contributor):
             return value.user.username
         else:
