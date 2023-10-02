@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsAdminAuthenticated(BasePermission):
+class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         return bool(
             request.user
@@ -10,10 +10,10 @@ class IsAdminAuthenticated(BasePermission):
         )
 
 
-class IsThisMyData(BasePermission):
-    def has_permission(self, request, view):
+class IsOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
         return bool(
             request.user
             and request.user.is_authenticated
-            and int(view.kwargs['pk']) == request.user.id
+            and request.user == obj
         )

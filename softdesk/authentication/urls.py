@@ -7,7 +7,7 @@ from django.urls import path, include
 from authentication.views import AdminUserViewSet
 
 router = routers.SimpleRouter()
-router.register('user', AdminUserViewSet, basename='user')
+router.register('users', AdminUserViewSet, basename='user')
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(),

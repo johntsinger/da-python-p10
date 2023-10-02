@@ -1,9 +1,9 @@
+from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny
-from django.contrib.auth import get_user_model
 from authentication.permissions import (
-    IsAdminAuthenticated,
-    IsThisMyData
+    IsAdmin,
+    IsOwner
 )
 from authentication.serializers import (
     UserDetailSerializer,
@@ -18,12 +18,10 @@ class AdminUserViewSet(ModelViewSet):
     serializer_class = UserDetailSerializer
 
     def get_permissions(self):
-        if self.action in ('update', 'partial_update', 'destroy'):
-            permission_classes = [
-                IsAdminAuthenticated
-                | IsThisMyData
-            ]
+        if self.action == 'list':
+            self.permission_classes = [IsAdmin]
+        elif self.action == 'create':
+            self.permission_classes = [AllowAny]
         else:
-            permission_classes = [AllowAny]
-
-        return [permission() for permission in permission_classes]
+            self.permission_classes = [IsOwner | IsAdmin]
+        return super().get_permissions()
