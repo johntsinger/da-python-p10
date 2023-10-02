@@ -61,6 +61,7 @@ class ContributorSlugRelatedField(SlugRelatedField):
         )
 
     def to_representation(self, value):
+        print(type(value))
         if isinstance(value, Contributor):
             return value.user.username
         else:
@@ -74,7 +75,7 @@ class IssueListSerializer(ModelSerializer):
         slug_field='username',
         error_messages={
             'does_not_exist':
-                ('User object with {slug_name}={value} '
+                ('Contributor object with user_{slug_name}={value} '
                  'is not a contributor of this project.')
         }
     )
