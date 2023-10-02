@@ -6,12 +6,16 @@ from projectsapp.models import (
 
 
 class IsAuthor(BasePermission):
+    message = "Only the author can perform this action."
+
     def has_object_permission(self, request, view, obj):
-        return bool(
-            request.user
-            and request.user.is_authenticated
-            and request.user == obj.author
-        )
+        return request.user.id == obj.author.id
+
+
+class IsProjectCreator(BasePermission):
+    def has_permission(self, request, view):
+        project = get_object_or_404(Project, pk=view.kwargs['project_pk'])
+        return request.user == project.author
 
 
 class IsDataOwner(BasePermission):
@@ -24,13 +28,12 @@ class IsDataOwner(BasePermission):
 
 
 class IsContributor(BasePermission):
-    def has_permission(self, request, view):
-        if 'project_pk' in view.kwargs:
-            project = get_object_or_404(Project, pk=view.kwargs['project_pk'])
-            return request.user in project.contributors.all()
-        return True
+    message = "You must be a contributor to access this project."
 
     def has_object_permission(self, request, view, obj):
-        if 'project_pk' not in view.kwargs:
-            return request.user in obj.contributors.all()
-        return True
+        if obj.author.can_be_contacted:
+            self.message += (
+                " Contact the project owner to "
+                f"ask for an access : {obj.author.email}"
+            )
+        return request.user.id in obj.contributors.values_list('id', flat=True)
