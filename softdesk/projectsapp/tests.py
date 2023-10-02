@@ -1,8 +1,13 @@
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
-from projectsapp.models import Project
+from projectsapp.models import (
+    Project,
+    Issue,
+    Comment,
+)
 
 
 class AppAPITestCase(APITestCase):
@@ -66,6 +71,23 @@ class AppAPITestCase(APITestCase):
             }
         )
 
+        cls.issue1 = Issue.objects.create(
+            author=cls.user,
+            project=cls.project1,
+            assigned_to=cls.project1.contributor_set.get(pk=1),
+            name="issue1",
+            description="issue1 description",
+            priority="LOW",
+            tag="BUG",
+            status="To Do",
+        )
+
+        cls.comment1 = Comment.objects.create(
+            description="comment1 description",
+            issue=cls.issue1,
+            author=cls.user
+        )
+
     @classmethod
     def create_user(
         cls,
@@ -112,13 +134,8 @@ class AppAPITestCase(APITestCase):
                 'id': project.pk,
                 'name': project.name,
                 'description': project.description,
-                'author': project.author.id,
+                'author': project.author.username,
                 'type': project.type,
-                'time_created': self.format_datetime(project.time_created),
-                'contributors': [
-                    contributor.id
-                    for contributor in project.contributors.all()
-                ]
             } for project in projects
         ]
 
@@ -127,52 +144,91 @@ class AppAPITestCase(APITestCase):
             'id': project.pk,
             'name': project.name,
             'description': project.description,
-            'author': {
-                'id': project.author.id,
-                'username': project.author.username,
-                'email': project.author.email
-            },
+            'author': project.author.username,
             'type': project.type,
             'time_created': self.format_datetime(project.time_created),
             'contributors': [
                 {
                     'id': contributor.id,
-                    'user': {
-                        'id': contributor.user.id,
-                        'username': contributor.user.username,
-                        'email': contributor.user.email
-                    },
+                    'user': contributor.user.username,
                     'role': contributor.role
                 }
                 for contributor in project.contributor_set.all()
             ],
-            'issues': [
-                {
-                    "name": issue.name,
-                    "description": issue.description,
-                    "priority": issue.priority,
-                    "tag": issue.tag,
-                    "status": issue.status,
-                    "project": issue.project,
-                    "assigned_to": {
-                        'id': issue.assigned_to.id,
-                        'username': issue.assigned_to.username,
-                        'email': issue.assigned_to.email
-                    },
-                    "author": {
-                        'id': issue.author.id,
-                        'username': issue.author.username,
-                        'email': issue.author.email
-                    },
-                    "time_created": issue.time_created
-                }
-                for issue in project.issues.all()
-            ]
+            'open_issues_count': project.issues.filter(
+                ~Q(status='Finished')
+            ).count(),
+            'closed_issues_count': project.issues.filter(
+                Q(status='Finished')
+            ).count()
+        }
+
+    def get_issue_list_data(self, issues):
+        return [
+            {
+                "id": issue.id,
+                "author": issue.author.username,
+                "project": issue.project.name,
+                "assigned_to": issue.assigned_to.user.username,
+                "name": issue.name,
+                "description": issue.description,
+                "priority": issue.priority,
+                "tag": issue.tag,
+                "status": issue.status,
+            } for issue in issues
+        ]
+
+    def get_issue_detail_data(self, issue):
+        return {
+            "id": issue.id,
+            "author": issue.author.username,
+            "project": issue.project.name,
+            "assigned_to": issue.assigned_to.user.username,
+            "comments_count": issue.comments.count(),
+            "name": issue.name,
+            "description": issue.description,
+            "priority": issue.priority,
+            "tag": issue.tag,
+            "status": issue.status,
+            "time_created": self.format_datetime(issue.time_created)
+        }
+
+    def get_comment_list_data(self, comments):
+        return [
+            {
+                "id": str(comment.id),
+                "author": comment.author.username,
+                "issue": comment.issue.name,
+                "description": comment.description,
+                "time_created": self.format_datetime(comment.time_created)
+            } for comment in comments
+        ]
+
+    def get_comment_detail_data(self, comment):
+        return {
+            "id": str(comment.id),
+            "author": comment.author.username,
+            "issue": comment.issue.name,
+            "description": comment.description,
+            "time_created": self.format_datetime(comment.time_created)
         }
 
     def get_response_unauthenticated(self):
         return {
             'detail': 'Authentication credentials were not provided.'
+        }
+
+    def get_response_not_contributor(self, project):
+        return {
+            "detail":
+            "You must be a contributor to access this project."
+            " Contact the project owner to "
+            f"ask for an access : {project.author.email}"
+        }
+
+    def get_response_not_auhtor(self):
+        return {
+            "detail": "Only the author can perform this action."
         }
 
     def get_response_no_permission(self):
@@ -181,8 +237,8 @@ class AppAPITestCase(APITestCase):
         }
 
 
-class TestProjectAuthenticatedPermission(AppAPITestCase):
-    """Test Project for an authenticated user that have all permissions"""
+class TestProjectAuthor(AppAPITestCase):
+    """Test Project for an authenticated author"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
     url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
@@ -235,6 +291,20 @@ class TestProjectAuthenticatedPermission(AppAPITestCase):
             Project.objects.get(name='project').contributors.all()
         )
         self.assertEqual(project.contributor_set.first().role, 'AUTHOR')
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "name": "project renamed"
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.project1.refresh_from_db()
+        self.assertEqual(
+            self.project1.name,
+            "project renamed"
+        )
 
     def test_delete(self):
         project_count = Project.objects.count()
@@ -365,8 +435,8 @@ class TestProjectAuthenticatedPermission(AppAPITestCase):
         )
 
 
-class TestProjectNoPermission(AppAPITestCase):
-    """Test Project for an authenticated user with no permissions"""
+class TestProjectContributor(AppAPITestCase):
+    """Test Project for an authenticated contributor"""
     url_detail = reverse_lazy('project-detail', args=(1,))
     url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
     url_remove_contributor = reverse_lazy(
@@ -384,9 +454,23 @@ class TestProjectNoPermission(AppAPITestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(),
-            self.get_response_no_permission()
+            self.get_response_not_auhtor()
         )
         self.assertEqual(Project.objects.count(), project_count)
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "name": "project renamed"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.project1.refresh_from_db()
+        self.assertEqual(
+            self.project1.name,
+            "project1"
+        )
 
     def test_add_contributor(self):
         contributors_count = self.project1.contributors.all().count()
@@ -399,7 +483,7 @@ class TestProjectNoPermission(AppAPITestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(),
-            self.get_response_no_permission()
+            self.get_response_not_auhtor()
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -511,3 +595,127 @@ class TestProjectNotAuthenticated(AppAPITestCase):
             self.project1.contributors.all().count(),
             contributors_count
         )
+
+
+class TestIssue(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-list', args=(1,))
+    url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user', password='wxcv1234')
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()['results'],
+            self.get_issue_list_data(
+                [self.issue1]
+            )
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            self.get_issue_detail_data(self.issue1)
+        )
+
+    def test_create(self):
+        issue_count = Issue.objects.count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "assigned_to": 2,
+                "name": "issue2",
+                "description": "issue2 description",
+                "priority": "LOW",
+                "tag": "BUG",
+                "status": "Finished",
+            }
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Issue.objects.count(), issue_count + 1)
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "name": "issue1 renamed"
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.issue1.refresh_from_db()
+        self.assertEqual(
+            self.issue1.name,
+            "issue1 renamed"
+        )
+
+    def test_delete(self):
+        issue_count = Issue.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Issue.objects.count(), issue_count - 1)
+
+
+class TestComment(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user', password='wxcv1234')
+        self.url_detail = reverse_lazy(
+            'project-issue-comment-detail',
+            args=(1, 1, self.comment1.id)
+        )
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()['results'],
+            self.get_comment_list_data(
+                [self.comment1]
+            )
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            self.get_comment_detail_data(self.comment1)
+        )
+
+    def test_create(self):
+        comment_count = Comment.objects.count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "description": "comment1 description",
+            }
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Comment.objects.count(), comment_count + 1)
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "description": "comment1 description changed"
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.comment1.refresh_from_db()
+        self.assertEqual(
+            self.comment1.description,
+            "comment1 description changed"
+        )
+
+    def test_delete(self):
+        comment_count = Comment.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Comment.objects.count(), comment_count - 1)
