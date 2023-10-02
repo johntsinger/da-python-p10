@@ -101,25 +101,25 @@ Admin user can access Django admin interface at http://127.0.0.1:8000/admin/
 | # | Get all projects *(Authenticated user)* | GET | /projects/ |
 | # | Create a project *(Authenticated user)* | POST | /projects/ |
 | # | Get a project *(contributors only)* | GET | /projects/{id}/ |
-| # | Delete a project *(author only)* | DELETE | /project/{id}/ |
-| # | Update a project *(author only)* | PUT / PATCH | /project/{id}/ |
+| # | Delete a project *(author only)* | DELETE | /projects/{id}/ |
+| # | Update a project *(author only)* | PUT / PATCH | /projects/{id}/ |
 | *Contributor*|
 | # | Get all contributors *(contributors only)* | GET | /projects/{id}/contributors/ |
 | # | Add a contributor *(author only)* | POST | /projects/{id}/contributors/ |
 | # | Get a contributor *(contributors only)* | GET | /projects/{id}/contributors/{id}/ |
-| # | Remove a contributor *(author only)* | DELETE | /project/{id}/contributors/{id}/ |
+| # | Remove a contributor *(author only)* | DELETE | /projects/{id}/contributors/{id}/ |
 | *Issue* |
 | # | Get all issues *(contributors only)* | GET | /projects/{id}/issues/ |
 | # | Create an issue *(contributors only)* | POST | /projects/{id}/issues/ |
 | # | Get an issue *(contributors only)* | GET | /projects/{id}/issues/{id}/ |
-| # | Delete an issue *(issue's author or project's author)* | DELETE | /project/{id}/issues/{id}/ |
-| # | Update an issue *(issue's author or project's author)* | PUT / PATCH | /project/{id}/issues/{id}/ |
+| # | Delete an issue *(issue's author or project's author)* | DELETE | /projects/{id}/issues/{id}/ |
+| # | Update an issue *(issue's author or project's author)* | PUT / PATCH | /projects/{id}/issues/{id}/ |
 | *Comment*|
 | # | Get all comments *(contributors only)* | GET | /projects/{id}/issues/{id}/comments/ |
 | # | Create a comments *(contributors only)* | POST | /projects/{id}/issues/{id}/comments/ |
 | # | Get a comment *(contributors only)* | GET | /projects/{id}/issues/{id}/comments/{id}/ |
-| # | Delete a comment *(comment's author or project's author)* | DELETE | /project/{id}/issues/{id}/comments/{id}/ |
-| # | Update a comment *(comment's author or project's author)* | PUT / PATCH | /project/{id}/issues/{id}/comments/{id}/ |
+| # | Delete a comment *(comment's author or project's author)* | DELETE | /projects/{id}/issues/{id}/comments/{id}/ |
+| # | Update a comment *(comment's author or project's author)* | PUT / PATCH | /projects/{id}/issues/{id}/comments/{id}/ |
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
