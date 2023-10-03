@@ -146,6 +146,7 @@ All fields are required
             <td>
                 <ul>
                     <li>Admin</li>
+                    <li>Data owner</li>
                 </ul>
             </td>
         </tr>
@@ -157,6 +158,7 @@ All fields are required
             <td>
                 <ul>
                     <li>Admin</li>
+                    <li>Data owner</li>
                 </ul>
             </td>
         </tr>
