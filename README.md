@@ -92,10 +92,102 @@ Prefix : Each url is prefixed with `/api/`
 
 #### User :
 
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `POST` | `/api/users/` | Create an account |
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/users/</code></td>
+            <td>Get all users</td>
+            <td></td>
+            <td>Admin</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/users/</code></td>
+            <td>Create an account</td>
+<td>
+All fields are required
+
+```json
+{
+    "username": "username",
+    "password": "password",
+    "email": "email@exemple.com",
+    "birthdate": "YYYY-MM-DD",
+    "can_be_contacted": true,
+    "can_data_be_shared":true,
+}
+```
+</td>
+            <td>Everyone</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/users/{user_id}/</code></td>
+            <td>Get a user</td>
+            <td></td>
+            <td>Admin</td>
+        </tr>
+        <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/users/{user_id}/</code></td>
+            <td>Delete a user</td>
+            <td></td>
+            <td>Admin</td>
+        </tr>
+        <tr>
+            <td><code>PUT</code></td>
+            <td><code>/api/users/{user_id}/</code></td>
+            <td>Update a user</td>
+<td>
+All fields are required
+
+```json
+{
+    "username": "username",
+    "password": "password",
+    "email": "email@exemple.com",
+    "birthdate": "YYYY-MM-DD",
+    "can_be_contacted": true,
+    "can_data_be_shared":true,
+}
+```
+</td>
+            <td>Admin<br/>Data owner</td>
+        </tr>
+        <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/api/users/{user_id}/</code></td>
+            <td>Partial user update</td>
+<td>
+Only the fields to be updated are required
+
+```json
+{
+    "username": "username"
+}
+```
+</td>
+            <td>Admin<br/>Data owner</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+| HTTP method | URL | Description | Data |
+| --- | --- | --- | --- |
 | `GET` | `/api/users/` | Get all users *(admin only)* |
+| `POST` | `/api/users/` | Create an account | 
 | `GET` | `/api/users/{user_id}/` | Get a user *(admin or data owner)* |
 | `DELETE` | `/api/users/{user_id}/` | Delete a user *(admin or data owner)* |
 | `PUT` | `/api/users/{user_id}/` | Update a user *(admin or data owner)* |
