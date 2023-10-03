@@ -108,7 +108,11 @@ Prefix : Each url is prefixed with `/api/`
             <td><code>/api/users/</code></td>
             <td>Get all users</td>
             <td></td>
-            <td>Admin</td>
+            <td>
+                <ul>
+                    <li>Admin</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -128,21 +132,33 @@ All fields are required
 }
 ```
 </td>
-            <td>Everyone</td>
+            <td>
+                <ul>
+                    <li>Everyone</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>GET</code></td>
             <td><code>/api/users/{user_id}/</code></td>
             <td>Get a user</td>
             <td></td>
-            <td>Admin</td>
+            <td>
+                <ul>
+                    <li>Admin</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
             <td><code>/api/users/{user_id}/</code></td>
             <td>Delete a user</td>
             <td></td>
-            <td>Admin</td>
+            <td>
+                <ul>
+                    <li>Admin</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PUT</code></td>
@@ -162,7 +178,12 @@ All fields are required
 }
 ```
 </td>
-            <td>Admin<br/>Data owner</td>
+            <td>
+                <ul>
+                    <li>Admin</li>
+                    <li>Data owner</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PATCH</code></td>
@@ -177,7 +198,12 @@ Only the fields to be updated are required
 }
 ```
 </td>
-            <td>Admin<br/>Data owner</td>
+            <td>
+                <ul>
+                    <li>Admin</li>
+                    <li>Data owner</li>
+                </ul>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -218,7 +244,11 @@ All fields are required
 }
 ```
 </td>
-            <td>Registered user</td>
+            <td>
+                <ul>
+                    <li>Registered user</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -233,7 +263,11 @@ All fields are required
 }
 ```
 </td>
-            <td>Everyone</td>
+            <td>
+                <ul>
+                    <li>Registered user</li>
+                </ul>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -263,7 +297,11 @@ All fields are required
             <td>Get all projects</td>
             <td></td>
             <td></td>
-            <td>Authenticated user</td>
+            <td>
+                <ul>
+                    <li>Authenticated user</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -291,7 +329,11 @@ All fields are required
 }
 ```
 </td>
-            <td>Authenticated user</td>
+            <td>
+                <ul>
+                    <li>Authenticated user</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>GET</code></td>
@@ -299,7 +341,11 @@ All fields are required
             <td>Get a project</td>
             <td></td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
@@ -307,7 +353,11 @@ All fields are required
             <td>Delete a projects</td>
             <td></td>
             <td></td>
-            <td>Project's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PUT</code></td>
@@ -335,7 +385,11 @@ All fields are required
 }
 ```
 </td>
-            <td>Project's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PATCH</code></td>
@@ -361,7 +415,11 @@ Only the fields to be updated are required
 }
 ```
 </td>
-            <td>Project's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                </ul>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -394,7 +452,11 @@ Only the fields to be updated are required
             <td><code>/api/projects/{project_id}/contributors/</code></td>
             <td>Get all contributors</td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -409,21 +471,33 @@ All fields are required
 }
 ```
 </td>
-            <td>Project's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
             <td>Get a contributor</td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
             <td>Delete a projects</td>
             <td></td>
-            <td>Project's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                </ul>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -455,7 +529,11 @@ All fields are required
             <td>Get all issues of this project</td>
             <td></td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -498,7 +576,11 @@ All fields are required
 }
 ```
 </td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>GET</code></td>
@@ -506,7 +588,11 @@ All fields are required
             <td>Get an issue</td>
             <td></td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
@@ -514,7 +600,12 @@ All fields are required
             <td>Delete an issue</td>
             <td></td>
             <td></td>
-            <td>Project's author<br/>Issue's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Issue's author</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PUT</code></td>
@@ -557,7 +648,12 @@ All fields are required
 }
 ```
 </td>
-            <td>Project's author<br/>Issue's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Issue's author</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>PATCH</code></td>
@@ -595,7 +691,12 @@ Only the fields to be updated are required
 }
 ```
 </td>
-            <td>Project's author<br/>Issue's author</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Issue's author</li>
+                </ul>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -627,7 +728,11 @@ Only the fields to be updated are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/</code></td>
             <td>Get all comments</td>
             <td></td>
-            <td>Project's contributor</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
         </tr>
         <tr>
             <td><code>POST</code></td>
@@ -645,7 +750,7 @@ All fields are required
             <td>
                 <ul>
                     <li>Project's contributor</li>
-                </ul>    
+                </ul>
             </td>
         </tr>
         <tr>
