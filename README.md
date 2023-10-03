@@ -210,15 +210,6 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
-| HTTP method | URL | Description | Data |
-| --- | --- | --- | --- |
-| `GET` | `/api/users/` | Get all users *(admin only)* |
-| `POST` | `/api/users/` | Create an account | 
-| `GET` | `/api/users/{user_id}/` | Get a user *(admin or data owner)* |
-| `DELETE` | `/api/users/{user_id}/` | Delete a user *(admin or data owner)* |
-| `PUT` | `/api/users/{user_id}/` | Update a user *(admin or data owner)* |
-| `PATCH` | `/api/users/{user_id}/` | Update a user *(admin or data owner)* |
-
 #### JW Token :
 
 <table>
@@ -273,11 +264,6 @@ All fields are required
         </tr>
     </tbody>
 </table>
-
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `POST` | `/token/` | Get JW Token *(User registered)* |
-| `POST` | `/token/refresh` | Refresh JW Token *(User registered)* |
 
 #### Project :
 
@@ -426,16 +412,6 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
-
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `GET` | `/api/projects/` | Get all projects *(Authenticated user)* |
-| `POST` | `/api/projects/` | Create a project *(Authenticated user)* |
-| `GET` | `/api/projects/{project_id}/` | Get a project *(contributors only)* |
-| `DELETE` | `/api/projects/{project_id}/` | Delete a project *(author only)* |
-| `PUT` | `/api/projects/{project_id}/` | Update a project *(author only)* |
-| `PATCH` | `/api/projects/{project_id}/` | Update a project *(author only)* |
-
 #### Contributor :
 
 <table>
@@ -503,13 +479,6 @@ All fields are required
         </tr>
     </tbody>
 </table>
-
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `GET` | `/api/projects/{project_id}/contributors/` | Get all contributors *(contributors only)* |
-| `POST` | `/api/projects/{project_id}/contributors/` | Add a contributor *(author only)* |
-| `GET` | `/api/projects/{project_id}/contributors/{contributor_id}/` | Get a contributor *(contributors only)* |
-| `DELETE` | `/api/projects/{project_id}/contributors/{contributor_id}/` | Remove a contributor *(author only)* |
 
 #### Issue :
 
@@ -703,15 +672,6 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `GET` | `/projects/{project_id}/issues/` | Get all issues *(contributors only)* |
-| `POST` | `/projects/{project_id}/issues/` | Create an issue *(contributors only)* |
-| `GET` | `/projects/{project_id}/issues/{issue_id}/` | Get an issue *(contributors only)* |
-| `DELETE` | `/projects/{project_id}/issues/{issue_id}/` | Delete an issue *(issue's author or project's author)* |
-| `PUT` | `/projects/{project_id}/issues/{issue_id}/` | Update an issue *(issue's author or project's author)* |
-| `PATCH` | `/projects/{project_id}/issues/{issue_id}/` | Update an issue *(issue's author or project's author)* |
-
 #### Comment :
 
 <table>
@@ -820,15 +780,6 @@ Only the fields to be updated are required
         </tr>
     </tbody>
 </table>
-
-| HTTP method | URL | Description |
-| --- | --- | --- |
-| `GET` | `/projects/{project_id}/issues/{issue_id}/comments/` | Get all comments *(contributors only)* |
-| `POST` | `/projects/{project_id}/issues/issue_id}/comments/` | Create a comments *(contributors only)* |
-| `GET` | /projects/{project_id}/issues/{issue_id}/comments/{comment_id}/ | Get a comment *(contributors only)* |
-| `DELETE` | /projects/{project_id}/issues/{issue_id}/comments/{comment_id}/ | Delete a comment *(comment's author or project's author)* |
-| `PUT` | `/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/` | Update a comment *(comment's author or project's author)* |
-| `PATCH` | `/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/` | Update a comment *(comment's author or project's author)* |
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
