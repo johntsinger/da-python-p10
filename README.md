@@ -252,6 +252,7 @@ All fields are required
             <th>URL</th>
             <th>Description</th>
             <th>Data</th>
+            <th>Choices</th>
             <th>Permissions</th>
         </tr>
     </thead>
@@ -260,6 +261,7 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/</code></td>
             <td>Get all projects</td>
+            <td></td>
             <td></td>
             <td>Authenticated user</td>
         </tr>
@@ -270,13 +272,22 @@ All fields are required
 <td>
 All fields are required
 
-type choices : BACKEND, FRONTEND, iOS, ANDROID
-
 ```json
 {
     "name": "project's name",
     "description": "project's description",
     "type": "BACKEND"
+}
+```
+</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
 }
 ```
 </td>
@@ -287,12 +298,14 @@ type choices : BACKEND, FRONTEND, iOS, ANDROID
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Get a project</td>
             <td></td>
-            <td>Contributor</td>
+            <td></td>
+            <td>Project's contributor</td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Delete a projects</td>
+            <td></td>
             <td></td>
             <td>Project's author</td>
         </tr>
@@ -303,13 +316,22 @@ type choices : BACKEND, FRONTEND, iOS, ANDROID
 <td>
 All fields are required
 
-type choices : BACKEND, FRONTEND, iOS, ANDROID
-
 ```json
 {
     "name": "project's name",
     "description": "project's description",
     "type": "BACKEND"
+}
+```
+</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
 }
 ```
 </td>
@@ -328,7 +350,18 @@ Only the fields to be updated are required
 }
 ```
 </td>
-            <td>Admin<br/>Project's author</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
+}
+```
+</td>
+            <td>Project's author</td>
         </tr>
     </tbody>
 </table>
@@ -345,6 +378,56 @@ Only the fields to be updated are required
 
 #### Contributor :
 
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/contributors/</code></td>
+            <td>Get all contributors</td>
+            <td></td>
+            <td>Project's contributor</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/projects/{project_id}/contributors/</code></td>
+            <td>Add a contributor</td>
+<td>
+All fields are required
+
+```json
+{
+    "user": "username",
+}
+```
+</td>
+            <td>Project's author</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
+            <td>Get a contributor</td>
+            <td></td>
+            <td>Project's contributor</td>
+        </tr>
+        <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
+            <td>Delete a projects</td>
+            <td></td>
+            <td>Project's author</td>
+        </tr>
+    </tbody>
+</table>
+
 | HTTP method | URL | Description |
 | --- | --- | --- |
 | `GET` | `/api/projects/{project_id}/contributors/` | Get all contributors *(contributors only)* |
@@ -353,6 +436,127 @@ Only the fields to be updated are required
 | `DELETE` | `/api/projects/{project_id}/contributors/{contributor_id}/` | Remove a contributor *(author only)* |
 
 #### Issue :
+
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Choices</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/</code></td>
+            <td>Get all projects</td>
+            <td></td>
+            <td></td>
+            <td>Authenticated user</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/projects/</code></td>
+            <td>Create a project</td>
+<td>
+All fields are required
+
+```json
+{
+    "name": "project's name",
+    "description": "project's description",
+    "type": "BACKEND"
+}
+```
+</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
+}
+```
+</td>
+            <td>Authenticated user</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Get a project</td>
+            <td></td>
+            <td></td>
+            <td>Project's contributor</td>
+        </tr>
+        <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Delete a projects</td>
+            <td></td>
+            <td></td>
+            <td>Project's author</td>
+        </tr>
+        <tr>
+            <td><code>PUT</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Update a project</td>
+<td>
+All fields are required
+
+```json
+{
+    "name": "project's name",
+    "description": "project's description",
+    "type": "BACKEND"
+}
+```
+</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
+}
+```
+</td>
+            <td>Project's author</td>
+        </tr>
+        <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Partial project update</td>
+<td>
+Only the fields to be updated are required
+
+```json
+{
+    "description": "description updated"
+}
+```
+</td>
+<td>
+
+```json
+"type": {
+    "BACKEND",
+    "FRONTEND",
+    "iOS",
+    "ANDROID",
+}
+```
+</td>
+            <td>Project's author</td>
+        </tr>
+    </tbody>
+</table>
 
 | HTTP method | URL | Description |
 | --- | --- | --- |
