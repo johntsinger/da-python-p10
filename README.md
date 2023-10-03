@@ -451,88 +451,118 @@ All fields are required
     <tbody>
         <tr>
             <td><code>GET</code></td>
-            <td><code>/api/projects/</code></td>
-            <td>Get all projects</td>
+            <td><code>/api/projects/{project_id}/issues/</code></td>
+            <td>Get all issues of this project</td>
             <td></td>
             <td></td>
-            <td>Authenticated user</td>
+            <td>Project's contributor</td>
         </tr>
         <tr>
             <td><code>POST</code></td>
-            <td><code>/api/projects/</code></td>
-            <td>Create a project</td>
+            <td><code>/api/projects/{project_id}/issues/</code></td>
+            <td>Create an issue</td>
 <td>
 All fields are required
 
 ```json
 {
-    "name": "project's name",
-    "description": "project's description",
-    "type": "BACKEND"
+    "name": "issue's name",
+    "description": "issues's description",
+    "assigned_to" : "test",
+    "priority": "HIGH",
+    "tag": "BUG",
+    "status": "To Do"
 }
 ```
 </td>
 <td>
 
 ```json
-"type": {
-    "BACKEND",
-    "FRONTEND",
-    "iOS",
-    "ANDROID",
+"assigned_to" : {
+    "username of a project contributor"
+},
+"priority": {
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+},
+"tag": {
+    "BUG",
+    "FEATURE",
+    "TASK"
+},
+"status" : {
+    "To Do",
+    "In Progress",
+    "Finished"
 }
 ```
 </td>
-            <td>Authenticated user</td>
+            <td>Project's contributor</td>
         </tr>
         <tr>
             <td><code>GET</code></td>
-            <td><code>/api/projects/{project_id}/</code></td>
-            <td>Get a project</td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
+            <td>Get an issue</td>
             <td></td>
             <td></td>
             <td>Project's contributor</td>
         </tr>
         <tr>
             <td><code>DELETE</code></td>
-            <td><code>/api/projects/{project_id}/</code></td>
-            <td>Delete a projects</td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
+            <td>Delete an issue</td>
             <td></td>
             <td></td>
-            <td>Project's author</td>
+            <td>Project's author<br/>Issue's author</td>
         </tr>
         <tr>
             <td><code>PUT</code></td>
-            <td><code>/api/projects/{project_id}/</code></td>
-            <td>Update a project</td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
+            <td>Update an issue</td>
 <td>
 All fields are required
 
 ```json
 {
-    "name": "project's name",
-    "description": "project's description",
-    "type": "BACKEND"
+    "name": "issue's name",
+    "description": "issues's description",
+    "assigned_to" : "test",
+    "priority": "HIGH",
+    "tag": "BUG",
+    "status": "To Do"
 }
 ```
 </td>
 <td>
 
 ```json
-"type": {
-    "BACKEND",
-    "FRONTEND",
-    "iOS",
-    "ANDROID",
+"assigned_to" : {
+    "username of a project contributor"
+},
+"priority": {
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+},
+"tag": {
+    "BUG",
+    "FEATURE",
+    "TASK"
+},
+"status" : {
+    "To Do",
+    "In Progress",
+    "Finished"
 }
 ```
 </td>
-            <td>Project's author</td>
+            <td>Project's author<br/>Issue's author</td>
         </tr>
         <tr>
             <td><code>PATCH</code></td>
-            <td><code>/api/projects/{project_id}/</code></td>
-            <td>Partial project update</td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
+            <td>Partial issue update</td>
 <td>
 Only the fields to be updated are required
 
@@ -545,15 +575,27 @@ Only the fields to be updated are required
 <td>
 
 ```json
-"type": {
-    "BACKEND",
-    "FRONTEND",
-    "iOS",
-    "ANDROID",
+"assigned_to" : {
+    "username of a project contributor"
+},
+"priority": {
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+},
+"tag": {
+    "BUG",
+    "FEATURE",
+    "TASK"
+},
+"status" : {
+    "To Do",
+    "In Progress",
+    "Finished"
 }
 ```
 </td>
-            <td>Project's author</td>
+            <td>Project's author<br/>Issue's author</td>
         </tr>
     </tbody>
 </table>
@@ -568,6 +610,109 @@ Only the fields to be updated are required
 | `PATCH` | `/projects/{project_id}/issues/{issue_id}/` | Update an issue *(issue's author or project's author)* |
 
 #### Comment :
+
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/</code></td>
+            <td>Get all comments</td>
+            <td></td>
+            <td>Project's contributor</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/</code></td>
+            <td>Create a comment</td>
+<td>
+All fields are required
+
+```json
+{
+    "description": "Comment's description"
+}
+```
+</td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>    
+            </td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
+            <td>Get a comment</td>
+            <td></td>
+            <td>
+                <ul>
+                    <li>Project's contributor</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
+            <td>Delete a comment</td>
+            <td></td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Comment's author</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td><code>PUT</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
+            <td>Update a comment</td>
+<td>
+All fields are required
+
+```json
+{
+    "description": "comment's description"
+}
+```
+</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Comment's author</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
+            <td>Partial comment update</td>
+<td>
+Only the fields to be updated are required
+
+```json
+{
+    "description": "description updated"
+}
+```
+</td>
+            <td>
+                <ul>
+                    <li>Project's author</li>
+                    <li>Comment's author</li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 | HTTP method | URL | Description |
 | --- | --- | --- |
