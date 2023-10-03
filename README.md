@@ -86,40 +86,69 @@ Admin user can access Django admin interface at http://127.0.0.1:8000/admin/
 
 ### Endpoints :
 
-| Category | Description | HTTP method | URL *(base : http://127.0.0.1:8000/api)* |
-| :---: | --- | :---: | --- |
-| *User* |
-| # | Create an account | POST | /users/ |
-| # | Get all users *(admin only)* | GET | /users/ |
-| # | Get a user *(admin or data owner)* | GET | /users/{id}/ |
-| # | Delete a user *(admin or data owner)* | DELETE | /users/{id}/ |
-| # | Update a user *(admin or data owner)* | PUT / PATCH | /users/{id}/ |
-| *Token* |
-| # | Get JW Token *(User registered)* | POST | /token/ |
-| # | Refresh JW Token *(User registered)* | POST | /token/refresh |
-| *Project* |
-| # | Get all projects *(Authenticated user)* | GET | /projects/ |
-| # | Create a project *(Authenticated user)* | POST | /projects/ |
-| # | Get a project *(contributors only)* | GET | /projects/{id}/ |
-| # | Delete a project *(author only)* | DELETE | /projects/{id}/ |
-| # | Update a project *(author only)* | PUT / PATCH | /projects/{id}/ |
-| *Contributor*|
-| # | Get all contributors *(contributors only)* | GET | /projects/{id}/contributors/ |
-| # | Add a contributor *(author only)* | POST | /projects/{id}/contributors/ |
-| # | Get a contributor *(contributors only)* | GET | /projects/{id}/contributors/{id}/ |
-| # | Remove a contributor *(author only)* | DELETE | /projects/{id}/contributors/{id}/ |
-| *Issue* |
-| # | Get all issues *(contributors only)* | GET | /projects/{id}/issues/ |
-| # | Create an issue *(contributors only)* | POST | /projects/{id}/issues/ |
-| # | Get an issue *(contributors only)* | GET | /projects/{id}/issues/{id}/ |
-| # | Delete an issue *(issue's author or project's author)* | DELETE | /projects/{id}/issues/{id}/ |
-| # | Update an issue *(issue's author or project's author)* | PUT / PATCH | /projects/{id}/issues/{id}/ |
-| *Comment*|
-| # | Get all comments *(contributors only)* | GET | /projects/{id}/issues/{id}/comments/ |
-| # | Create a comments *(contributors only)* | POST | /projects/{id}/issues/{id}/comments/ |
-| # | Get a comment *(contributors only)* | GET | /projects/{id}/issues/{id}/comments/{id}/ |
-| # | Delete a comment *(comment's author or project's author)* | DELETE | /projects/{id}/issues/{id}/comments/{id}/ |
-| # | Update a comment *(comment's author or project's author)* | PUT / PATCH | /projects/{id}/issues/{id}/comments/{id}/ |
+Base URL : http://127.0.0.1:8000/
+
+Prefix : Each url is prefixed with `/api/`
+
+#### User :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `POST` | `/api/users/` | Create an account |
+| `GET` | `/api/users/` | Get all users *(admin only)* |
+| `GET` | `/api/users/{user_id}/` | Get a user *(admin or data owner)* |
+| `DELETE` | `/api/users/{user_id}/` | Delete a user *(admin or data owner)* |
+| `PUT` | `/api/users/{user_id}/` | Update a user *(admin or data owner)* |
+| `PATCH` | `/api/users/{user_id}/` | Update a user *(admin or data owner)* |
+
+#### JW Token :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `POST` | `/token/` | Get JW Token *(User registered)* |
+| `POST` | `/token/refresh` | Refresh JW Token *(User registered)* |
+
+#### Project :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `GET` | `/api/projects/` | Get all projects *(Authenticated user)* |
+| `POST` | `/api/projects/` | Create a project *(Authenticated user)* |
+| `GET` | `/api/projects/{project_id}/` | Get a project *(contributors only)* |
+| `DELETE` | `/api/projects/{project_id}/` | Delete a project *(author only)* |
+| `PUT` | `/api/projects/{project_id}/` | Update a project *(author only)* |
+| `PATCH` | `/api/projects/{project_id}/` | Update a project *(author only)* |
+
+#### Contributor :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `GET` | `/api/projects/{project_id}/contributors/` | Get all contributors *(contributors only)* |
+| `POST` | `/api/projects/{project_id}/contributors/` | Add a contributor *(author only)* |
+| `GET` | `/api/projects/{project_id}/contributors/{contributor_id}/` | Get a contributor *(contributors only)* |
+| `DELETE` | `/api/projects/{project_id}/contributors/{contributor_id}/` | Remove a contributor *(author only)* |
+
+#### Issue :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `GET` | `/projects/{project_id}/issues/` | Get all issues *(contributors only)* |
+| `POST` | `/projects/{project_id}/issues/` | Create an issue *(contributors only)* |
+| `GET` | `/projects/{project_id}/issues/{issue_id}/` | Get an issue *(contributors only)* |
+| `DELETE` | `/projects/{project_id}/issues/{issue_id}/` | Delete an issue *(issue's author or project's author)* |
+| `PUT` | `/projects/{project_id}/issues/{issue_id}/` | Update an issue *(issue's author or project's author)* |
+| `PATCH` | `/projects/{project_id}/issues/{issue_id}/` | Update an issue *(issue's author or project's author)* |
+
+#### Comment :
+
+| HTTP method | URL | Description |
+| --- | --- | --- |
+| `GET` | `/projects/{project_id}/issues/{issue_id}/comments/` | Get all comments *(contributors only)* |
+| `POST` | `/projects/{project_id}/issues/issue_id}/comments/` | Create a comments *(contributors only)* |
+| `GET` | /projects/{project_id}/issues/{issue_id}/comments/{comment_id}/ | Get a comment *(contributors only)* |
+| `DELETE` | /projects/{project_id}/issues/{issue_id}/comments/{comment_id}/ | Delete a comment *(comment's author or project's author)* |
+| `PUT` | `/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/` | Update a comment *(comment's author or project's author)* |
+| `PATCH` | `/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/` | Update a comment *(comment's author or project's author)* |
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
