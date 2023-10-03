@@ -182,8 +182,6 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
-
-
 | HTTP method | URL | Description | Data |
 | --- | --- | --- | --- |
 | `GET` | `/api/users/` | Get all users *(admin only)* |
@@ -195,12 +193,146 @@ Only the fields to be updated are required
 
 #### JW Token :
 
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/token/</code></td>
+            <td>Claim JW Token</td>
+<td>
+All fields are required
+
+```json
+{
+    "username": "username",
+    "password": "password",
+}
+```
+</td>
+            <td>Registered user</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/token/refresh</code></td>
+            <td>Refresh JW Token</td>
+<td>
+All fields are required
+
+```json
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}
+```
+</td>
+            <td>Everyone</td>
+        </tr>
+    </tbody>
+</table>
+
 | HTTP method | URL | Description |
 | --- | --- | --- |
 | `POST` | `/token/` | Get JW Token *(User registered)* |
 | `POST` | `/token/refresh` | Refresh JW Token *(User registered)* |
 
 #### Project :
+
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Description</th>
+            <th>Data</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/</code></td>
+            <td>Get all projects</td>
+            <td></td>
+            <td>Authenticated user</td>
+        </tr>
+        <tr>
+            <td><code>POST</code></td>
+            <td><code>/api/projects/</code></td>
+            <td>Create a project</td>
+<td>
+All fields are required
+
+type choices : BACKEND, FRONTEND, iOS, ANDROID
+
+```json
+{
+    "name": "project's name",
+    "description": "project's description",
+    "type": "BACKEND"
+}
+```
+</td>
+            <td>Authenticated user</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Get a project</td>
+            <td></td>
+            <td>Contributor</td>
+        </tr>
+        <tr>
+            <td><code>DELETE</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Delete a projects</td>
+            <td></td>
+            <td>Project's author</td>
+        </tr>
+        <tr>
+            <td><code>PUT</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Update a project</td>
+<td>
+All fields are required
+
+type choices : BACKEND, FRONTEND, iOS, ANDROID
+
+```json
+{
+    "name": "project's name",
+    "description": "project's description",
+    "type": "BACKEND"
+}
+```
+</td>
+            <td>Project's author</td>
+        </tr>
+        <tr>
+            <td><code>PATCH</code></td>
+            <td><code>/api/projects/{project_id}/</code></td>
+            <td>Partial project update</td>
+<td>
+Only the fields to be updated are required
+
+```json
+{
+    "description": "description updated"
+}
+```
+</td>
+            <td>Admin<br/>Project's author</td>
+        </tr>
+    </tbody>
+</table>
+
 
 | HTTP method | URL | Description |
 | --- | --- | --- |
