@@ -163,6 +163,27 @@ class AppAPITestCase(APITestCase):
             ).count()
         }
 
+    def get_contributor_list_data(self, contributors):
+        return [
+            {
+                "id": contributor.id,
+                "user": contributor.user.username,
+                "role": contributor.role,
+            } for contributor in contributors
+        ]
+
+    def get_contributor_detail_data(self, contributor):
+        return {
+            "id": contributor.id,
+            "user": {
+                "id": contributor.user.id,
+                "username": contributor.user.username,
+                "email": contributor.user.email
+            },
+            "role": contributor.role,
+            "project": contributor.project.name
+        }
+
     def get_issue_list_data(self, issues):
         return [
             {
@@ -219,33 +240,31 @@ class AppAPITestCase(APITestCase):
         }
 
     def get_response_not_contributor(self, project):
+        message = "You must be a contributor to access this project."
+        if project.author.can_be_contacted:
+            message += (
+                " Contact the project owner to "
+                f"ask for an access : {project.author.email}"
+            )
         return {
-            "detail":
-            "You must be a contributor to access this project."
-            " Contact the project owner to "
-            f"ask for an access : {project.author.email}"
+            "detail": f"{message}"
         }
 
-    def get_response_not_auhtor(self):
-        return {
-            "detail": "Only the author can perform this action."
-        }
-
-    def get_response_no_permission(self):
+    def get_response_not_permited(self):
         return {
             "detail": "You do not have permission to perform this action."
         }
 
+    def get_response_not_found(self):
+        return {
+            "detail": "Not found."
+        }
 
-class TestProjectAuthor(AppAPITestCase):
+
+class TestProjectAsAuthor(AppAPITestCase):
     """Test Project for an authenticated author"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
-    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
-    url_remove_contributor = reverse_lazy(
-        'project-remove_contributor',
-        args=(1,)
-    )
 
     def setUp(self):
         super().setUp()
@@ -312,130 +331,8 @@ class TestProjectAuthor(AppAPITestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Project.objects.count(), project_count - 1)
 
-    def test_add_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_add_contributor,
-            data={
-                "user": "3"
-            }
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {'status': 'Contributor added.'}
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count + 1
-        )
 
-    def test_add_existing_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_add_contributor,
-            data={
-                "user": "1"
-            }
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.json(),
-            {
-                'unique constraint failed':
-                    [
-                        "This contributor already exists."
-                    ]
-            }
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-    def test_add_unexistind_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_add_contributor,
-            data={
-                "user": "50"
-            }
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.json(),
-            {
-                "user": [
-                    "Invalid pk \"50\" - object does not exist."
-                ]
-            }
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-    def test_remove_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "2"
-            }
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {'status': 'Contributor removed.'}
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count - 1
-        )
-
-    def test_remove_author_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "1"
-            }
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.json(),
-            {'detail': 'You cannot remove the author from the contributors.'
-                ' Delete the project instead.'}
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-    def test_remove_unexisting_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "50"
-            }
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.json(),
-            {
-                "user": [
-                    f"Invalid pk 50 - Contributor does not exist."
-                ]
-            },
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-
-class TestProjectContributor(AppAPITestCase):
+class TestProjectAsContributor(AppAPITestCase):
     """Test Project for an authenticated contributor"""
     url_detail = reverse_lazy('project-detail', args=(1,))
     url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
@@ -454,7 +351,7 @@ class TestProjectContributor(AppAPITestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(),
-            self.get_response_not_auhtor()
+            self.get_response_not_permited()
         )
         self.assertEqual(Project.objects.count(), project_count)
 
@@ -466,50 +363,18 @@ class TestProjectContributor(AppAPITestCase):
             }
         )
         self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
         self.project1.refresh_from_db()
         self.assertEqual(
             self.project1.name,
             "project1"
         )
 
-    def test_add_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_add_contributor,
-            data={
-                "user": "3"
-            }
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_not_auhtor()
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
 
-    def test_remove_contributor(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "3"
-            }
-        )
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(
-            response.json(),
-            self.get_response_no_permission()
-        )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
-
-
-class TestProjectNotAuthenticated(AppAPITestCase):
+class TestProjectAsNotAuthenticated(AppAPITestCase):
     """Test Project for an unauthenticated user"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
@@ -560,18 +425,100 @@ class TestProjectNotAuthenticated(AppAPITestCase):
             self.get_response_unauthenticated()
         )
 
+
+class TestContributorAsAuthor(AppAPITestCase):
+    url_list = reverse_lazy('project-contributor-list', args=(1,))
+    url_detail_author = reverse_lazy(
+        'project-contributor-detail',
+        args=(1, 1)
+    )
+    url_detail_contributor = reverse_lazy(
+        'project-contributor-detail',
+        args=(1, 2)
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user', password='wxcv1234')
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()['results'],
+            self.get_contributor_list_data(self.project1.contributor_set.all())
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail_author)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            self.get_contributor_detail_data(
+                self.project1.contributor_set.first()
+            )
+        )
+
     def test_add_contributor(self):
         contributors_count = self.project1.contributors.all().count()
         response = self.client.post(
-            self.url_add_contributor,
+            self.url_list,
             data={
-                "user": "3"
+                "user": "user3"
             }
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(
             response.json(),
-            self.get_response_unauthenticated()
+            {
+                "id": 4,
+                "user": "user3",
+                "role": "CONTRIBUTOR",
+                "project": "project1"
+            }
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count + 1
+        )
+
+    def test_add_existing_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "user": "user2"
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json(),
+            {
+                'unique constraint failed':
+                    [
+                        "This contributor already exists."
+                    ]
+            }
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+    def test_add_unexistind_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "user": "user5"
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json(),
+            {
+                'user': ['User object with username=user5 does not exist.']
+            }
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -580,16 +527,25 @@ class TestProjectNotAuthenticated(AppAPITestCase):
 
     def test_remove_contributor(self):
         contributors_count = self.project1.contributors.all().count()
-        response = self.client.post(
-            self.url_remove_contributor,
-            data={
-                "user": "2"
-            }
+        response = self.client.delete(
+            self.url_detail_contributor,
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count - 1
+        )
+
+    def test_remove_author_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.delete(
+            self.url_detail_author,
+        )
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json(),
-            self.get_response_unauthenticated()
+            {'detail': 'You cannot remove the author from the contributors.'
+                ' Delete the project instead.'}
         )
         self.assertEqual(
             self.project1.contributors.all().count(),
@@ -597,7 +553,117 @@ class TestProjectNotAuthenticated(AppAPITestCase):
         )
 
 
-class TestIssue(AppAPITestCase):
+class TestContributorAsContributor(AppAPITestCase):
+    url_list = reverse_lazy('project-contributor-list', args=(1,))
+    url_detail_author = reverse_lazy(
+        'project-contributor-detail',
+        args=(1, 1)
+    )
+    url_detail_contributor = reverse_lazy(
+        'project-contributor-detail',
+        args=(1, 2)
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user2', password='wxcv1234')
+
+    def test_add_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "user": "user3"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+    def test_remove_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.delete(
+            self.url_detail_contributor,
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestContributorAsNotContributor(AppAPITestCase):
+    url_list = reverse_lazy('project-contributor-list', args=(1,))
+    url_detail_author = reverse_lazy(
+        'project-contributor-detail',
+        args=(1, 1)
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user3', password='wxcv1234')
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail_author)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+
+    def test_add_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "user": "user3"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+    def test_remove_contributor(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.delete(
+            self.url_detail_author,
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestIssueAsAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-list', args=(1,))
     url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
 
@@ -628,7 +694,7 @@ class TestIssue(AppAPITestCase):
         response = self.client.post(
             self.url_list,
             data={
-                "assigned_to": 2,
+                "assigned_to": 'user2',
                 "name": "issue2",
                 "description": "issue2 description",
                 "priority": "LOW",
@@ -660,7 +726,69 @@ class TestIssue(AppAPITestCase):
         self.assertEqual(Issue.objects.count(), issue_count - 1)
 
 
-class TestComment(AppAPITestCase):
+class TestIssueAsNotAuthor(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-list', args=(1,))
+    url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user2', password='wxcv1234')
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "name": "issue1 updated"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+
+    def test_delete(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.delete(
+            self.url_detail,
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestIssueAsNotContributor(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-list', args=(1,))
+    url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user3', password='wxcv1234')
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+
+
+class TestCommentAsAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
 
     def setUp(self):
@@ -719,3 +847,71 @@ class TestComment(AppAPITestCase):
         response = self.client.delete(self.url_detail)
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Comment.objects.count(), comment_count - 1)
+
+
+class TestCommentAsNotAuthor(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user2', password='wxcv1234')
+        self.url_detail = reverse_lazy(
+            'project-issue-comment-detail',
+            args=(1, 1, self.comment1.id)
+        )
+
+    def test_update(self):
+        response = self.client.patch(
+            self.url_detail,
+            data={
+                "description": "comment1 updated"
+            }
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+
+    def test_delete(self):
+        contributors_count = self.project1.contributors.all().count()
+        response = self.client.delete(
+            self.url_detail,
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_permited()
+        )
+        self.assertEqual(
+            self.project1.contributors.all().count(),
+            contributors_count
+        )
+
+
+class TestCommentAsNotContributor(AppAPITestCase):
+    url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username='user3', password='wxcv1234')
+        self.url_detail = reverse_lazy(
+            'project-issue-comment-detail',
+            args=(1, 1, self.comment1.id)
+        )
+
+    def test_list(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+
+    def test_detail(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
