@@ -139,7 +139,7 @@ Prefix : Each url is prefixed with `/api/`
     "email": "email@exemple.com",
     "birthdate": "YYYY-MM-DD",
     "can_be_contacted": true,
-    "can_data_be_shared":true,
+    "can_data_be_shared": true,
 }
 ```
 </td>
@@ -210,7 +210,7 @@ Prefix : Each url is prefixed with `/api/`
     "email": "email@exemple.com",
     "birthdate": "YYYY-MM-DD",
     "can_be_contacted": true,
-    "can_data_be_shared":true,
+    "can_data_be_shared": true,
 }
 ```
 </td>
