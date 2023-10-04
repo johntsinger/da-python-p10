@@ -6,8 +6,6 @@ from projectsapp.models import (
 
 
 class IsAuthor(BasePermission):
-    message = "Only the author can perform this action."
-
     def has_object_permission(self, request, view, obj):
         return request.user.id == obj.author.id
 
