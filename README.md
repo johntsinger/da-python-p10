@@ -41,7 +41,19 @@ If you don't have Python 3, please visit : https://www.python.org/downloads/ to 
     
 #### Install dependencies :
 
+##### Using pip
+
     pip install -r requirements.txt
+
+##### Using poetry :
+
+First install poetry :
+
+    pip install poetry
+
+then install dependencies:
+
+    poetry install
 
 ## Run the local server :
 
@@ -52,6 +64,10 @@ Go to the softdesk folder :
 Run the server :
 
     python manage.py runserver
+    
+or using poetry :
+
+    poetry run python manage.py runserver
 
 By default the port is 8000, but you can change it, e.g. to use port 8001 instead you can do :
 
