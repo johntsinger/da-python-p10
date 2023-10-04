@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "softdesk"
+version = "1.0.0"
+description = "REST API"
+authors = ["John <john.t.singer@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "4.2.5"
+django-debug-toolbar = "4.2.0"
+djangorestframework = "3.14.0"
+djangorestframework-simplejwt = "5.3.0"
+drf-nested-routers = "0.93.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
