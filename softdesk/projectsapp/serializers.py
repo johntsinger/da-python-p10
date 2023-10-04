@@ -5,6 +5,7 @@ from rest_framework.serializers import (
     ValidationError,
     StringRelatedField,
     SlugRelatedField,
+    ReadOnlyField
 )
 from projectsapp.models import (
     Contributor,
@@ -136,6 +137,7 @@ class ProjectDetailSerailizer(FieldMixin, ModelSerializer):
 
 class ContributorDetailSerializer(ModelSerializer):
     user = UserSerializer()
+    project = StringRelatedField(read_only=True)
 
     class Meta:
         model = Contributor
@@ -143,12 +145,25 @@ class ContributorDetailSerializer(ModelSerializer):
 
 
 class AddContributorSerializer(ModelSerializer):
-    user = SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    user = SlugRelatedField(
+        slug_field='username',
+        queryset=User.objects.all(),
+        error_messages={
+            "does_not_exist":
+                "User object with {slug_name}={value} does not exist."
+        }
+    )
+    id = ReadOnlyField()
+    role = ReadOnlyField()
+    project = StringRelatedField()
 
     class Meta:
         model = Contributor
         fields = [
+            'id',
             'user',
+            'role',
+            'project'
         ]
 
     def create(self, validated_data):
