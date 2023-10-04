@@ -142,10 +142,7 @@ class ContributorViewSet(MultipleSerializerMixin, ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         self.perform_destroy(contributor)
-        return Response(
-            {"detail: Contributor removed"},
-            status=status.HTTP_200_OK
-        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
         serializer.save(
