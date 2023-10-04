@@ -92,12 +92,15 @@ Prefix : Each url is prefixed with `/api/`
 
 #### User :
 
+
+
 <table>
     <thead>
         <tr>
             <th>Method</th>
             <th>URL</th>
             <th>Description</th>
+            <th>Headers</th>
             <th>Data</th>
             <th>Permissions</th>
         </tr>
@@ -107,6 +110,14 @@ Prefix : Each url is prefixed with `/api/`
             <td><code>GET</code></td>
             <td><code>/api/users/</code></td>
             <td>Get all users</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -118,8 +129,8 @@ Prefix : Each url is prefixed with `/api/`
             <td><code>POST</code></td>
             <td><code>/api/users/</code></td>
             <td>Create an account</td>
+            <td></td>
 <td>
-All fields are required
 
 ```json
 {
@@ -142,6 +153,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/users/{user_id}/</code></td>
             <td>Get a user</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -154,6 +173,14 @@ All fields are required
             <td><code>DELETE</code></td>
             <td><code>/api/users/{user_id}/</code></td>
             <td>Delete a user</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -167,7 +194,14 @@ All fields are required
             <td><code>/api/users/{user_id}/</code></td>
             <td>Update a user</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -192,7 +226,14 @@ All fields are required
             <td><code>/api/users/{user_id}/</code></td>
             <td>Partial user update</td>
 <td>
-Only the fields to be updated are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -230,7 +271,6 @@ Only the fields to be updated are required
             <td><code>/token/</code></td>
             <td>Claim JW Token</td>
 <td>
-All fields are required
 
 ```json
 {
@@ -250,11 +290,10 @@ All fields are required
             <td><code>/token/refresh/</code></td>
             <td>Refresh JW Token</td>
 <td>
-All fields are required
 
 ```json
 {
-    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    "refresh": "{token}"
 }
 ```
 </td>
@@ -277,6 +316,7 @@ All fields are required
             <th>Method</th>
             <th>URL</th>
             <th>Description</th>
+            <th>Headers</th>
             <th>Data</th>
             <th>Choices</th>
             <th>Permissions</th>
@@ -287,6 +327,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/</code></td>
             <td>Get all projects</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -300,7 +348,14 @@ All fields are required
             <td><code>/api/projects/</code></td>
             <td>Create a project</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -331,6 +386,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Get a project</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -343,6 +406,14 @@ All fields are required
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Delete a project</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -356,7 +427,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Update a project</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -388,7 +466,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/</code></td>
             <td>Partial project update</td>
 <td>
-Only the fields to be updated are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -426,6 +511,7 @@ Only the fields to be updated are required
             <th>Method</th>
             <th>URL</th>
             <th>Description</th>
+            <th>Headers</th>
             <th>Data</th>
             <th>Permissions</th>
         </tr>
@@ -435,6 +521,14 @@ Only the fields to be updated are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/contributors/</code></td>
             <td>Get all contributors</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -447,7 +541,14 @@ Only the fields to be updated are required
             <td><code>/api/projects/{project_id}/contributors/</code></td>
             <td>Add a contributor</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -465,6 +566,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
             <td>Get a contributor</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -476,6 +585,14 @@ All fields are required
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
             <td>Delete a contributor</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -496,6 +613,7 @@ All fields are required
             <th>Method</th>
             <th>URL</th>
             <th>Description</th>
+            <th>Headers</th>
             <th>Data</th>
             <th>Choices</th>
             <th>Permissions</th>
@@ -506,6 +624,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/issues/</code></td>
             <td>Get all issues</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -519,7 +645,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/issues/</code></td>
             <td>Create an issue</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -565,6 +698,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
             <td>Get an issue</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -577,6 +718,14 @@ All fields are required
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
             <td>Delete an issue</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td></td>
             <td>
@@ -591,7 +740,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
             <td>Update an issue</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -639,7 +795,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/</code></td>
             <td>Partial issue update</td>
 <td>
-Only the fields to be updated are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -690,6 +853,7 @@ Only the fields to be updated are required
             <th>Method</th>
             <th>URL</th>
             <th>Description</th>
+            <th>Headers</th>
             <th>Data</th>
             <th>Permissions</th>
         </tr>
@@ -699,6 +863,14 @@ Only the fields to be updated are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/</code></td>
             <td>Get all comments</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -711,7 +883,14 @@ Only the fields to be updated are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/</code></td>
             <td>Create a comment</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -729,6 +908,14 @@ All fields are required
             <td><code>GET</code></td>
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
             <td>Get a comment</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -740,6 +927,14 @@ All fields are required
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
             <td>Delete a comment</td>
+<td>
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
             <td></td>
             <td>
                 <ul>
@@ -753,7 +948,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
             <td>Update a comment</td>
 <td>
-All fields are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
@@ -773,7 +975,14 @@ All fields are required
             <td><code>/api/projects/{project_id}/issues/{issue_id}/comments/{comment_id}/</code></td>
             <td>Partial comment update</td>
 <td>
-Only the fields to be updated are required
+
+```json
+{
+    "Authorization": "Bearer {token}"
+}
+```
+</td>
+<td>
 
 ```json
 {
