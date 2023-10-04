@@ -90,6 +90,7 @@ Base URL : http://127.0.0.1:8000/
 
 Prefix : Each url is prefixed with `/api/`
 
+
 #### User :
 
 <table>
@@ -210,6 +211,7 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
+
 #### JW Token :
 
 <table>
@@ -264,6 +266,7 @@ All fields are required
         </tr>
     </tbody>
 </table>
+
 
 #### Project :
 
@@ -338,7 +341,7 @@ All fields are required
         <tr>
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/</code></td>
-            <td>Delete a projects</td>
+            <td>Delete a project</td>
             <td></td>
             <td></td>
             <td>
@@ -412,6 +415,7 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
+
 #### Contributor :
 
 <table>
@@ -469,7 +473,7 @@ All fields are required
         <tr>
             <td><code>DELETE</code></td>
             <td><code>/api/projects/{project_id}/contributors/{contributor_id}/</code></td>
-            <td>Delete a projects</td>
+            <td>Delete a contributor</td>
             <td></td>
             <td>
                 <ul>
@@ -479,6 +483,7 @@ All fields are required
         </tr>
     </tbody>
 </table>
+
 
 #### Issue :
 
@@ -672,6 +677,7 @@ Only the fields to be updated are required
     </tbody>
 </table>
 
+
 #### Comment :
 
 <table>
@@ -780,6 +786,7 @@ Only the fields to be updated are required
         </tr>
     </tbody>
 </table>
+
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
