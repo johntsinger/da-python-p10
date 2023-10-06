@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework.test import APITestCase, APIClient, override_settings
+from rest_framework.test import APITestCase, APIClient
 from projectsapp.models import (
     Project,
     Issue,
@@ -9,16 +9,6 @@ from projectsapp.models import (
 )
 
 
-@override_settings(
-    REST_FRAMEWORK={
-        'DEFAULT_PAGINATION_CLASS':
-            'rest_framework.pagination.LimitOffsetPagination',
-        'PAGE_SIZE': 5,
-        'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
-        ),
-    }
-)
 class AppAPITestCase(APITestCase):
     maxDiff = None
 
@@ -397,7 +387,7 @@ class TestProjectAsNotAuthenticated(AppAPITestCase):
 
     def test_list(self):
         response = self.client.get(self.url_list)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(
             response.json(),
             self.get_response_unauthenticated()
@@ -405,7 +395,7 @@ class TestProjectAsNotAuthenticated(AppAPITestCase):
 
     def test_detail(self):
         response = self.client.get(self.url_detail)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(
             response.json(),
             self.get_response_unauthenticated()
@@ -421,7 +411,7 @@ class TestProjectAsNotAuthenticated(AppAPITestCase):
                 "type": "BACKEND"
             }
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(
             response.json(),
             self.get_response_unauthenticated()
@@ -430,7 +420,7 @@ class TestProjectAsNotAuthenticated(AppAPITestCase):
 
     def test_delete(self):
         response = self.client.delete(self.url_detail)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(
             response.json(),
             self.get_response_unauthenticated()
