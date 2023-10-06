@@ -47,7 +47,7 @@ You can install dependencies using pip or Poetry.
 
     pip install -r requirements.txt
 
-##### Using poetry :
+##### Using Poetry :
 
 First install poetry :
 
