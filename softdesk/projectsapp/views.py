@@ -174,7 +174,7 @@ class IssueViewSet(MultipleSerializerMixin, ModelViewSet):
             'partial_update',
         ):
             permission_classes = (
-                self.permission_classes + [IsAuthor | IsProjectCreator]
+                self.permission_classes + [IsAuthor]
             )
         else:
             permission_classes = self.permission_classes
@@ -211,7 +211,7 @@ class CommentViewSet(ModelViewSet):
             'partial_update',
         ):
             permission_classes = (
-                self.permission_classes + [IsAuthor | IsProjectCreator]
+                self.permission_classes + [IsAuthor]
             )
         else:
             permission_classes = self.permission_classes
