@@ -94,10 +94,11 @@ By default the port is 8000, but you can change it, e.g. to use port 8001 instea
 - [cURL](https://curl.se)
 - Using a browser through the Django Rest Framework Browsable API at http://127.0.0.1:8000/api/
 
-  - You must be logged in, as the Authorization header cannot be sent. Then use urls as described bellow.
+  - You must be logged in, as the Authorization header cannot be sent.
 
     - login url : http://127.0.0.1:8000/api-auth/login/
     - logout url : http://127.0.0.1:8000/api-auth/logout/
+  -  Then use urls as described bellow.
 
 ### Users :
 
