@@ -120,7 +120,6 @@ class AppAPITestCase(APITestCase):
             {
                 'id': project.pk,
                 'name': project.name,
-                'description': project.description,
                 'author': project.author.username,
                 'type': project.type,
             } for project in projects
@@ -176,13 +175,9 @@ class AppAPITestCase(APITestCase):
             {
                 "id": issue.id,
                 "author": issue.author.username,
-                "project": issue.project.name,
                 "assigned_to": issue.assigned_to.user.username,
                 "name": issue.name,
-                "description": issue.description,
                 "priority": issue.priority,
-                "tag": issue.tag,
-                "status": issue.status,
             } for issue in issues
         ]
 

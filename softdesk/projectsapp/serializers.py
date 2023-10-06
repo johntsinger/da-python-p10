@@ -70,7 +70,6 @@ class ContributorSlugRelatedField(SlugRelatedField):
 
 class IssueListSerializer(ModelSerializer):
     author = StringRelatedField(read_only=True)
-    project = StringRelatedField(read_only=True)
     assigned_to = ContributorSlugRelatedField(
         slug_field='username',
         error_messages={
@@ -82,7 +81,7 @@ class IssueListSerializer(ModelSerializer):
 
     class Meta:
         model = Issue
-        exclude = ('time_created',)
+        fields = ('id', 'name', 'author', 'assigned_to', 'priority')
 
     def validate_assigned_to(self, value):
         return Contributor.objects.get(
@@ -111,7 +110,7 @@ class ProjectListSerializer(ModelSerializer):
 
     class Meta:
         model = Project
-        exclude = ('time_created', 'contributors')
+        exclude = ('time_created', 'contributors', 'description')
 
 
 class ProjectDetailSerailizer(FieldMixin, ModelSerializer):
