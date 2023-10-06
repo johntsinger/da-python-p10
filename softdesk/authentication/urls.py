@@ -4,10 +4,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView
 )
 from django.urls import path, include
-from authentication.views import AdminUserViewSet
+from authentication.views import UserViewSet
 
 router = routers.SimpleRouter()
-router.register('users', AdminUserViewSet, basename='user')
+router.register('users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(),

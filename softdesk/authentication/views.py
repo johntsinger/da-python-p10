@@ -13,7 +13,7 @@ from authentication.serializers import (
 User = get_user_model()
 
 
-class AdminUserViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
 
