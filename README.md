@@ -1032,11 +1032,13 @@ Prefix : Each url is prefixed with `/api/`
 
 ## Tests :
 
-#### Run test :
+#### Run tests :
 
     python manage.py test
 
-coverage : 94%
+Coverage : 94%
+
+https://coverage.readthedocs.io/en/7.3.2/install.html
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
