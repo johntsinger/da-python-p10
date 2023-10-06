@@ -41,6 +41,8 @@ If you don't have Python 3, please visit : https://www.python.org/downloads/ to 
     
 #### Install dependencies :
 
+You can install dependencies using pip or Poetry
+
 ##### Using pip
 
     pip install -r requirements.txt
@@ -54,6 +56,16 @@ First install poetry :
 then install dependencies:
 
     poetry install
+
+#### Flake8 :
+
+Flake8 is not a mandatory dependency, so you must add it manually.
+
+    pip install flake8
+
+then run :
+
+    flake8
 
 ## Run the local server :
 
