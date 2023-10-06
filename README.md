@@ -763,7 +763,6 @@ Prefix : Each url is prefixed with `/api/`
             <td></td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Issue's author</li>
                 </ul>
             </td>
@@ -818,7 +817,6 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Issue's author</li>
                 </ul>
             </td>
@@ -868,7 +866,6 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Issue's author</li>
                 </ul>
             </td>
@@ -971,7 +968,6 @@ Prefix : Each url is prefixed with `/api/`
             <td></td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Comment's author</li>
                 </ul>
             </td>
@@ -998,7 +994,6 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Comment's author</li>
                 </ul>
             </td>
@@ -1025,7 +1020,6 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Project's author</li>
                     <li>Comment's author</li>
                 </ul>
             </td>
