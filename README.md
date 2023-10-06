@@ -41,7 +41,7 @@ If you don't have Python 3, please visit : https://www.python.org/downloads/ to 
     
 #### Install dependencies :
 
-You can install dependencies using pip or Poetry
+You can install dependencies using pip or Poetry.
 
 ##### Using pip
 
