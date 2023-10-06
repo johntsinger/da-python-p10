@@ -1030,6 +1030,14 @@ Prefix : Each url is prefixed with `/api/`
 
 <br/>
 
+## Tests :
+
+#### Run test :
+
+    python manage.py test
+
+coverage : 94%
+
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
 Project link : https://github.com/johntsinger/da-python-p10
