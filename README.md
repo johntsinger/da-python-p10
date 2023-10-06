@@ -315,7 +315,7 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Registered user</li>
+                    <li>Everyone, but requires an account</li>
                 </ul>
             </td>
         </tr>
@@ -333,7 +333,7 @@ Prefix : Each url is prefixed with `/api/`
 </td>
             <td>
                 <ul>
-                    <li>Registered user</li>
+                    <li>Everyone, but requires an access token</li>
                 </ul>
             </td>
         </tr>
