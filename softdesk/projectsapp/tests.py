@@ -1,8 +1,7 @@
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient, override_settings
 from projectsapp.models import (
     Project,
     Issue,
@@ -10,12 +9,23 @@ from projectsapp.models import (
 )
 
 
+@override_settings(
+    REST_FRAMEWORK={
+        'DEFAULT_PAGINATION_CLASS':
+            'rest_framework.pagination.LimitOffsetPagination',
+        'PAGE_SIZE': 5,
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+        ),
+    }
+)
 class AppAPITestCase(APITestCase):
     maxDiff = None
 
     @classmethod
     def setUpTestData(cls):
         cls.client = APIClient()
+        cls.get_token_url = reverse('token-obtain-pair')
         cls.user = cls.create_user(
             username="user",
             email="user@test.com",
@@ -40,6 +50,7 @@ class AppAPITestCase(APITestCase):
             can_be_contacted=False,
             can_data_be_shared=False
         )
+
         cls.project1 = Project.objects.create(
             name='project1',
             description='description1',
@@ -110,20 +121,6 @@ class AppAPITestCase(APITestCase):
         user = User.objects.create_user(**user_data)
         user.save()
         return user
-
-    def setUp(self):
-        get_token_url = reverse('token-obtain-pair')
-        access_token = self.client.post(
-            get_token_url,
-            {
-                "username": "user",
-                "password": "wxcv1234"
-            }
-        ).data.get("access")
-        self.client.credentials(
-            HTTP_AUTORIZATION=f'Bearer {access_token}'
-        )
-        self.project1 = Project.objects.get(pk=1)
 
     def format_datetime(self, value):
         return value.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -266,9 +263,21 @@ class TestProjectAsAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -335,15 +344,22 @@ class TestProjectAsAuthor(AppAPITestCase):
 class TestProjectAsContributor(AppAPITestCase):
     """Test Project for an authenticated contributor"""
     url_detail = reverse_lazy('project-detail', args=(1,))
-    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
-    url_remove_contributor = reverse_lazy(
-        'project-remove_contributor',
-        args=(1,)
-    )
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user2",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
 
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user2', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_delete(self):
         project_count = Project.objects.count()
@@ -378,11 +394,6 @@ class TestProjectAsNotAuthenticated(AppAPITestCase):
     """Test Project for an unauthenticated user"""
     url_list = reverse_lazy('project-list')
     url_detail = reverse_lazy('project-detail', args=(1,))
-    url_add_contributor = reverse_lazy('project-add_contributor', args=(1,))
-    url_remove_contributor = reverse_lazy(
-        'project-remove_contributor',
-        args=(1,)
-    )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -437,9 +448,21 @@ class TestContributorAsAuthor(AppAPITestCase):
         args=(1, 2)
     )
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -564,9 +587,21 @@ class TestContributorAsContributor(AppAPITestCase):
         args=(1, 2)
     )
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user2",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user2', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_add_contributor(self):
         contributors_count = self.project1.contributors.all().count()
@@ -609,9 +644,21 @@ class TestContributorAsNotContributor(AppAPITestCase):
         args=(1, 1)
     )
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user3",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user3', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -667,9 +714,21 @@ class TestIssueAsAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-list', args=(1,))
     url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -730,9 +789,21 @@ class TestIssueAsNotAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-list', args=(1,))
     url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user2",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user2', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_update(self):
         response = self.client.patch(
@@ -767,9 +838,21 @@ class TestIssueAsNotContributor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-list', args=(1,))
     url_detail = reverse_lazy('project-issue-detail', args=(1, 1))
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user3",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
     def setUp(self):
-        super().setUp()
-        self.client.login(username='user3', password='wxcv1234')
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
 
     def test_list(self):
         response = self.client.get(self.url_list)
@@ -791,12 +874,24 @@ class TestIssueAsNotContributor(AppAPITestCase):
 class TestCommentAsAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
 
-    def setUp(self):
-        super().setUp()
-        self.client.login(username='user', password='wxcv1234')
-        self.url_detail = reverse_lazy(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+        cls.url_detail = reverse_lazy(
             'project-issue-comment-detail',
-            args=(1, 1, self.comment1.id)
+            args=(1, 1, cls.comment1.id)
+        )
+
+    def setUp(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
         )
 
     def test_list(self):
@@ -852,12 +947,24 @@ class TestCommentAsAuthor(AppAPITestCase):
 class TestCommentAsNotAuthor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
 
-    def setUp(self):
-        super().setUp()
-        self.client.login(username='user2', password='wxcv1234')
-        self.url_detail = reverse_lazy(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user2",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+        cls.url_detail = reverse_lazy(
             'project-issue-comment-detail',
-            args=(1, 1, self.comment1.id)
+            args=(1, 1, cls.comment1.id)
+        )
+
+    def setUp(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
         )
 
     def test_update(self):
@@ -892,12 +999,24 @@ class TestCommentAsNotAuthor(AppAPITestCase):
 class TestCommentAsNotContributor(AppAPITestCase):
     url_list = reverse_lazy('project-issue-comment-list', args=(1, 1))
 
-    def setUp(self):
-        super().setUp()
-        self.client.login(username='user3', password='wxcv1234')
-        self.url_detail = reverse_lazy(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user3",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+        cls.url_detail = reverse_lazy(
             'project-issue-comment-detail',
-            args=(1, 1, self.comment1.id)
+            args=(1, 1, cls.comment1.id)
+        )
+
+    def setUp(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
         )
 
     def test_list(self):
