@@ -1036,7 +1036,7 @@ Prefix : Each url is prefixed with `/api/`
 
     python manage.py test
 
-Coverage : 94%
+Coverage : 95%
 
 https://coverage.readthedocs.io/en/7.3.2/install.html
 
