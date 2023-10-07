@@ -302,7 +302,7 @@ Prefix : Each url is prefixed with `/api/`
     <tbody>
         <tr>
             <td><code>POST</code></td>
-            <td><code>/token/</code></td>
+            <td><code>/api/token/</code></td>
             <td>Claim JW Token</td>
 <td>
 
@@ -321,7 +321,7 @@ Prefix : Each url is prefixed with `/api/`
         </tr>
         <tr>
             <td><code>POST</code></td>
-            <td><code>/token/refresh/</code></td>
+            <td><code>/api/token/refresh/</code></td>
             <td>Refresh JW Token</td>
 <td>
 
