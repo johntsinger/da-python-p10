@@ -45,13 +45,7 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
 
     def get_queryset(self):
         if self.action == 'list':
-            return Project.objects.all().select_related('author').only(
-                'id',
-                'name',
-                'description',
-                'type',
-                'author__username'
-            )
+            return Project.objects.all().select_related('author')
         return Project.objects.annotate(
             open_issues_count=Count(
                 'issues',
