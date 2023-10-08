@@ -21,7 +21,7 @@ class AppAPITestCase(APITestCase):
             email="user@test.com",
             password="wxcv1234",
             birthdate="1991-03-02",
-            can_be_contacted=False,
+            can_be_contacted=True,
             can_data_be_shared=False
         )
         cls.user2 = cls.create_user(
@@ -62,7 +62,7 @@ class AppAPITestCase(APITestCase):
         cls.project2 = Project.objects.create(
             name='project2',
             description='description2',
-            author=cls.user,
+            author=cls.user2,
             type='iOS',
         )
         cls.project2.contributors.add(
@@ -375,6 +375,43 @@ class TestProjectAsContributor(AppAPITestCase):
         )
 
 
+class TestProjectAsNotContributor(AppAPITestCase):
+    url_detail = reverse_lazy('project-detail', args=(1,))
+    url_detail2 = reverse_lazy('project-detail', args=(2,))
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.access_token = cls.client.post(
+            cls.get_token_url,
+            {
+                "username": "user3",
+                "password": "wxcv1234"
+            }
+        ).data.get("access")
+
+    def setUp(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}'
+        )
+
+    def test_detail_author_can_be_contacted(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_contributor(self.project1)
+        )
+
+    def test_detail_author_cannot_be_contacted(self):
+        response = self.client.get(self.url_detail2)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_contributor(self.project2)
+        )
+
+
 class TestProjectAsNotAuthenticated(AppAPITestCase):
     """Test Project for an unauthenticated user"""
     url_list = reverse_lazy('project-list')
@@ -563,11 +600,7 @@ class TestContributorAsAuthor(AppAPITestCase):
 
 class TestContributorAsContributor(AppAPITestCase):
     url_list = reverse_lazy('project-contributor-list', args=(1,))
-    url_detail_author = reverse_lazy(
-        'project-contributor-detail',
-        args=(1, 1)
-    )
-    url_detail_contributor = reverse_lazy(
+    url_detail = reverse_lazy(
         'project-contributor-detail',
         args=(1, 2)
     )
@@ -609,7 +642,7 @@ class TestContributorAsContributor(AppAPITestCase):
     def test_remove_contributor(self):
         contributors_count = self.project1.contributors.all().count()
         response = self.client.delete(
-            self.url_detail_contributor,
+            self.url_detail,
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
