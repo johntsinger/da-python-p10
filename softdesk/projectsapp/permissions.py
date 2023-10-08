@@ -16,15 +16,6 @@ class IsProjectCreator(BasePermission):
         return request.user == project.author
 
 
-class IsDataOwner(BasePermission):
-    def has_permission(self, request, view):
-        if 'user' in request.data:
-            return (
-                request.user.id == int(request.data['user'])
-            )
-        return True
-
-
 class IsContributor(BasePermission):
     message = "You must be a contributor to access this project."
 

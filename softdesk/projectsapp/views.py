@@ -20,7 +20,6 @@ from projectsapp.serializers import (
 )
 from projectsapp.permissions import (
     IsAuthor,
-    IsDataOwner,
     IsContributor,
     IsProjectCreator
 )
@@ -66,13 +65,8 @@ class ProjectViewSet(MultipleSerializerMixin, ModelViewSet):
             'destroy',
             'update',
             'partial_update',
-            'add_contributor'
         ):
             permission_classes = self.permission_classes + [IsAuthor]
-        elif self.action == 'remove_contibutor':
-            permission_classes = (
-                self.permission_classes + [IsDataOwner | IsAuthor]
-            )
         else:
             permission_classes = self.permission_classes
         return [permission() for permission in permission_classes]
