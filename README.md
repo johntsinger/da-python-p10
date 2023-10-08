@@ -87,6 +87,16 @@ By default the port is 8000, but you can change it, e.g. to use port 8001 instea
 
 ⚠️ If you change the port, make sure you also change it in the url, replacing 8000 with the new port.
 
+## Tests :
+
+#### Run tests :
+
+    python manage.py test
+
+Coverage : 99%
+
+To install coverage follow https://coverage.readthedocs.io/en/7.3.2/install.html
+
 ## Usage :
 
 ### The API can be accessed using a variety of tools :
@@ -1029,16 +1039,6 @@ Prefix : Each url is prefixed with `/api/`
 </table>
 
 <br/>
-
-## Tests :
-
-#### Run tests :
-
-    python manage.py test
-
-Coverage : 95%
-
-https://coverage.readthedocs.io/en/7.3.2/install.html
 
 ## Contact :
 Jonathan Singer - john.t.singer@gmail.com\
