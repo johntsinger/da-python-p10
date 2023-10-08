@@ -5,7 +5,7 @@ from rest_framework.serializers import (
     ValidationError,
     StringRelatedField,
     SlugRelatedField,
-    ReadOnlyField
+    ReadOnlyField,
 )
 from projectsapp.models import (
     Contributor,
@@ -81,7 +81,12 @@ class IssueListSerializer(ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ('id', 'name', 'author', 'assigned_to', 'priority')
+        exclude = ('time_created', 'project')
+        extra_kwargs = {
+            'description': {'write_only': True},
+            'tag': {'write_only': True},
+            'status': {'write_only': True}
+        }
 
     def validate_assigned_to(self, value):
         return Contributor.objects.get(
@@ -110,7 +115,10 @@ class ProjectListSerializer(ModelSerializer):
 
     class Meta:
         model = Project
-        exclude = ('time_created', 'contributors', 'description')
+        exclude = ('time_created', 'contributors')
+        extra_kwargs = {
+            'description': {'write_only': True}
+        }
 
 
 class ProjectDetailSerailizer(FieldMixin, ModelSerializer):
