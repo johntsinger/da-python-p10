@@ -131,7 +131,7 @@ class UserAsAdmin(UserTestCase):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()['results'],
+            response.json(),
             self.get_user_list_data(
                 User.objects.all()
             )

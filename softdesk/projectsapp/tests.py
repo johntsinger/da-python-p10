@@ -268,7 +268,7 @@ class TestProjectAsAuthor(AppAPITestCase):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()['results'],
+            response.json(),
             self.get_project_list_data(
                 [self.project1, self.project2]
             )
@@ -490,7 +490,7 @@ class TestContributorAsAuthor(AppAPITestCase):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()['results'],
+            response.json(),
             self.get_contributor_list_data(self.project1.contributor_set.all())
         )
 
@@ -752,7 +752,7 @@ class TestIssueAsAuthor(AppAPITestCase):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()['results'],
+            response.json(),
             self.get_issue_list_data(
                 [self.issue1]
             )
@@ -916,7 +916,7 @@ class TestCommentAsAuthor(AppAPITestCase):
         response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()['results'],
+            response.json(),
             self.get_comment_list_data(
                 [self.comment1]
             )
