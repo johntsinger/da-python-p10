@@ -837,19 +837,14 @@ class TestIssueAsNotAuthor(AppAPITestCase):
         )
 
     def test_delete(self):
-        contributors_count = self.project1.contributors.all().count()
-        response = self.client.delete(
-            self.url_detail,
-        )
+        issue_count = Issue.objects.count()
+        response = self.client.delete(self.url_detail)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(),
             self.get_response_not_permited()
         )
-        self.assertEqual(
-            self.project1.contributors.all().count(),
-            contributors_count
-        )
+        self.assertEqual(Issue.objects.count(), issue_count)
 
 
 class TestIssueAsNotContributor(AppAPITestCase):
@@ -887,6 +882,36 @@ class TestIssueAsNotContributor(AppAPITestCase):
             response.json(),
             self.get_response_not_found()
         )
+
+    def test_create(self):
+        issue_count = Issue.objects.count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "assigned_to": 'user2',
+                "name": "issue2",
+                "description": "issue2 description",
+                "priority": "LOW",
+                "tag": "BUG",
+                "status": "Finished",
+            }
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+        self.assertEqual(Issue.objects.count(), issue_count)
+
+    def test_delete(self):
+        issue_count = Issue.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+        self.assertEqual(Issue.objects.count(), issue_count)
 
 
 class TestCommentAsAuthor(AppAPITestCase):
@@ -1052,3 +1077,28 @@ class TestCommentAsNotContributor(AppAPITestCase):
             response.json(),
             self.get_response_not_found()
         )
+
+    def test_create(self):
+        comment_count = Comment.objects.count()
+        response = self.client.post(
+            self.url_list,
+            data={
+                "description": "comment1 description",
+            }
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+        self.assertEqual(Comment.objects.count(), comment_count)
+
+    def test_delete(self):
+        comment_count = Comment.objects.count()
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json(),
+            self.get_response_not_found()
+        )
+        self.assertEqual(Comment.objects.count(), comment_count)
