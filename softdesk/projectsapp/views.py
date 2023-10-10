@@ -168,6 +168,27 @@ class IssueViewSet(MultipleSerializerMixin, ModelViewSet):
             permission_classes = self.permission_classes
         return [permission() for permission in permission_classes]
 
+    def create(self, request, *args, **kwargs):
+        if self.request.user.id in get_object_or_404(
+            Project,
+            pk=self.kwargs['project_pk']
+        ).contributors.values_list('id', flat=True):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+                headers=headers
+            )
+        return Response(
+            {
+                "detail": "Not found."
+            },
+            status=status.HTTP_404_NOT_FOUND
+        )
+
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
@@ -204,6 +225,27 @@ class CommentViewSet(ModelViewSet):
         else:
             permission_classes = self.permission_classes
         return [permission() for permission in permission_classes]
+
+    def create(self, request, *args, **kwargs):
+        if self.request.user.id in get_object_or_404(
+            Project,
+            pk=self.kwargs['project_pk']
+        ).contributors.values_list('id', flat=True):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+                headers=headers
+            )
+        return Response(
+            {
+                "detail": "Not found"
+            },
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     def perform_create(self, serializer):
         serializer.save(
