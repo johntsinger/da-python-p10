@@ -242,7 +242,7 @@ class CommentViewSet(ModelViewSet):
             )
         return Response(
             {
-                "detail": "Not found"
+                "detail": "Not found."
             },
             status=status.HTTP_404_NOT_FOUND
         )
