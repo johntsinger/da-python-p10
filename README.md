@@ -134,9 +134,9 @@ Base URL : http://127.0.0.1:8000/
 
 Prefix : Each url is prefixed with `/api/`
 
+Postman documentation : https://documenter.getpostman.com/view/29704548/2s9YJjRJvF
+
 #### User :
-
-
 
 <table>
     <thead>
