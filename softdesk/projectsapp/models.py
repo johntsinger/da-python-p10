@@ -135,7 +135,7 @@ class Issue(models.Model):
     )
     assigned_to = models.ForeignKey(
         to=Contributor,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='issues_assigned',
         blank=True,
         null=True
