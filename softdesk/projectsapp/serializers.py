@@ -76,7 +76,8 @@ class IssueListSerializer(ModelSerializer):
             'does_not_exist':
                 ('Contributor object with user_{slug_name}={value} '
                  'is not a contributor of this project.')
-        }
+        },
+        required=False
     )
 
     class Meta:
